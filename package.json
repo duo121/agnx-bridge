@@ -2,11 +2,11 @@
   "name": "agnx-bridge",
   "version": "0.1.0",
   "description": "AGNX Bridge — Chrome extension + Agent Skill that turns your logged-in browser into an AI runtime",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_GITHUB_OWNER/agnx-bridge.git"
+    "url": "https://github.com/duo121/agnx-bridge.git"
   },
   "scripts": {
     "dev": "wxt",

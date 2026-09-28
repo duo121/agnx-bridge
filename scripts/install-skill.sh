@@ -41,6 +41,18 @@ install_from_dir() {
     fi
     echo "[ok] installed → $dest"
   done
+
+  # 移除旧品牌 skill，避免 Agent 仍命中 webext-bridge
+  local legacy_names=("webext-bridge")
+  for legacy in "${legacy_names[@]}"; do
+    for base in "${HOME}/.cursor/skills" "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
+      local legacy_path="${base}/${legacy}"
+      if [[ -e "$legacy_path" || -L "$legacy_path" ]]; then
+        rm -rf "$legacy_path"
+        echo "[ok] removed legacy skill → $legacy_path"
+      fi
+    done
+  done
 }
 
 TMP=""

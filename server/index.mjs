@@ -90,7 +90,7 @@ function closeServer(server) {
   })
 }
 
-const requestedMainPort = parsePort(process.env.BRIDGE_PORT ?? process.env.PORT, 3002)
+const requestedMainPort = parsePort(process.env.BRIDGE_PORT ?? process.env.PORT, 3054)
 const requestedDiscoveryPort = parsePort(process.env.BRIDGE_DISCOVERY_PORT, 0, { allowZero: true })
 const discoveryFile = trimEnvString(process.env.BRIDGE_DISCOVERY_FILE)
   || path.resolve(process.cwd(), ".output/bridge-discovery.json")

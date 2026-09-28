@@ -184,4 +184,4 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 
 ## License
 
-Apache-2.0
+MIT
