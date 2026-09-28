@@ -44,7 +44,7 @@ let bridgePullWaitMs = DEFAULT_PULL_WAIT_MS
 let bridgeActiveRetryMs = DEFAULT_ACTIVE_RETRY_MS
 let bridgeRuntimeConfig: BridgeRuntimeConfig = {
   enabled: true,
-  port: 3002,
+  port: 3054,
 }
 let bridgeCommandHistory: BridgeCommandHistoryEntry[] = []
 let bridgeLastError: string | undefined

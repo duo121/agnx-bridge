@@ -36,16 +36,24 @@ HTTP 入口统一为 **`/api/agnx-bridge/*`**（旧路径 `/api/webext-bridge/*`
 
 ---
 
-## 目标用户路径（开源后）
+## 目标用户路径
 
-理想体验：
+1. 从 GitHub **Releases** 下载 `agnx-bridge-chrome-mv3.zip`，解压得到 `chrome-mv3/`
+2. Chrome → `chrome://extensions` → 开发者模式 → **加载已解压的扩展程序** → 选 `chrome-mv3/`
+3. **一行命令**安装本机宿主 + Skill：
 
-1. 从 GitHub **Releases** 下载已构建的扩展包（zip）
-2. Chrome → `chrome://extensions` → 开发者模式 → **加载已解压的扩展程序**
-3. **一行命令**安装 Skill（并装好 native-host）
-4. 扩展 popup 里点「开启桥接」→ 在 Cursor / Claude / Codex 里直接用
+```bash
+# 仓库公开后（把 <owner> 换成你的账号）
+AGNX_BRIDGE_GITHUB_OWNER=<owner> \
+  curl -fsSL https://raw.githubusercontent.com/<owner>/agnx-bridge/main/scripts/install.sh | bash
 
-> 当前仓库已按上述路径整理；**Releases 自动发构建包**与**零克隆装 native-host**仍有缺口，见文末「开源缺口」。开发者可先用下方「从源码安装」跑通。
+# 或已克隆本仓库时
+./scripts/install.sh
+```
+
+4. 扩展 popup → 端口 **3054**（默认）→ **开启桥接** → Agent 里直接用
+
+> Releases 自动发构建包仍依赖打 tag；在此之前请用下方「从源码安装」先 `pnpm build` 出扩展目录。其余缺口见文末。
 
 ---
 
@@ -58,14 +66,13 @@ git clone <本仓库 URL> agnx-bridge
 cd agnx-bridge
 pnpm install
 pnpm build                 # 产出 .output/chrome-mv3/
-pnpm native-host:install   # 安装本机 native host + bridge server 运行时
-./scripts/install-skill.sh # 把 skill 装进 Cursor / Claude / Codex
+./scripts/install.sh       # native-host + Skill（等价于 native-host:install + skill:install）
 ```
 
 然后：
 
 1. Chrome 打开 `chrome://extensions` → 开「开发者模式」→「加载已解压的扩展程序」→ 选 `.output/chrome-mv3/`
-2. 点扩展图标 → 端口填 `3054`（或你想用的端口）→ **开启桥接**
+2. 点扩展图标 → 端口应为 **3054** → **开启桥接**
 3. 健康检查：
 
 ```bash
@@ -74,25 +81,18 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 应看到 `clients.online >= 1`。之后在 Agent 里说「用 AGNX Bridge skill 列一下当前标签」即可。
 
-### 只装 Skill（一行）
-
-在仓库根目录：
+### 只装 Skill / 只装宿主
 
 ```bash
-./scripts/install-skill.sh
-# 或
-pnpm skill:install
+./scripts/install-skill.sh              # 仅 Skill
+pnpm native-host:install                # 仅 native-host
+AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh   # 一键但不装 Skill
 ```
 
-仓库上线 GitHub 后（把 `<owner>` 换成你的账号）：
+仓库上线 GitHub 后也可用：
 
 ```bash
-# 推荐：跨 Cursor / Claude / Codex 的 skills CLI
 npx skills add <owner>/agnx-bridge -g -y
-
-# 或脚本（需带 owner）
-AGNX_BRIDGE_GITHUB_OWNER=<owner> \
-  curl -fsSL https://raw.githubusercontent.com/<owner>/agnx-bridge/main/scripts/install-skill.sh | bash
 ```
 
 Skill 会装到：
@@ -121,8 +121,9 @@ Agent 通过 Skill 学到的入口：
 | `server/` | 本机 bridge HTTP server |
 | `native-host/` | Native Messaging 宿主 |
 | `skills/agnx-bridge/` | Agent Skill（给 Claude / Codex / Cursor） |
-| `scripts/install-native-host.mjs` | 安装本机宿主与 server 运行时 |
-| `scripts/install-skill.sh` | 一行安装 Skill |
+| `scripts/install.sh` | **一键**：native-host + Skill |
+| `scripts/install-native-host.mjs` | 仅安装本机宿主与 server 运行时 |
+| `scripts/install-skill.sh` | 仅安装 Skill |
 | `keys/extension-private-key.pem` | 稳定 extensionId（发布构建必须用它） |
 | `.output/chrome-mv3/` | `pnpm build` 后的可加载扩展目录 |
 
@@ -159,6 +160,7 @@ pnpm zip            # .output/*.zip —— 未来挂到 GitHub Releases
 pnpm crx            # 可选 CRX（仍建议用户 Load unpacked）
 pnpm native-host:install
 pnpm skill:install
+./scripts/install.sh    # 推荐：两者一起
 ```
 
 换浏览器装 native host：
@@ -183,25 +185,21 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 要对齐文首「目标用户路径」，还缺这些交付，建议按优先级补：
 
 1. **GitHub Release 产物**  
-   CI 跑 `pnpm build && pnpm zip`，把 `chrome-mv3` zip（及可选 `native-host-runtime` tar）挂到 Releases。用户现在还不能「只在网页上下载」。
+   已有 `.github/workflows/release.yml`：打 `v*` tag 后构建并上传 `agnx-bridge-chrome-mv3.zip`。公开仓库并推送 tag 后，用户才可「只在网页上下载」。
 
-2. **不克隆也能装 native-host**  
-   扩展无法自己启动 Node；必须装宿主。需要发布版安装器，例如：  
-   `curl …/install.sh | bash` 下载 runtime 到 Application Support 并写 NativeMessagingHosts，**无需** `pnpm install` 整仓。
+2. **不克隆装宿主**  
+   已提供 `scripts/install.sh`（可 `curl | bash`）。仍依赖 Node 与 GitHub 上的源码/归档可读；真正「只下 zip、无 Node」需再做打包安装器。
 
 3. **扩展安装体验**  
-   Chrome 不允许随便装 GitHub 上的 `.crx`。开源阶段只能 **Load unpacked** 或上架 **Chrome Web Store**。README 必须写清，避免用户以为双击 zip 就能装。
+   Chrome 不允许随便装 GitHub 上的 `.crx`。开源阶段只能 **Load unpacked** 或上架 **Chrome Web Store**。
 
-4. **端口默认值**  
-   文档与 Skill 默认 `3054`；请在 popup 里填同一端口。
-
-5. **跨平台**  
+4. **跨平台**  
    `install-native-host.mjs` 对 Windows 未支持；Linux 路径需再验。
 
-6. **Skill 发现**  
+5. **Skill 发现**  
    仓库公开后，首页用 `npx skills add <owner>/agnx-bridge -g -y`；可选登记 skills.sh。
 
-7. **能力产品化（可选）**  
+6. **能力产品化（可选）**  
    可交互元素快照、权限分层、skill 开场自动 `health` 检查。
 
 ---

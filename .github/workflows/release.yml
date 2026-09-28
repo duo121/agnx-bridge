@@ -22,13 +22,15 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm zip
-      - name: Pack native-host runtime
+      - name: Pack release artifacts
         run: |
           mkdir -p dist-release
           tar -czf dist-release/agnx-bridge-native-host-runtime.tar.gz \
-            native-host server scripts/install-native-host.mjs scripts/extension-identity.mjs keys
+            native-host server scripts/install-native-host.mjs scripts/extension-identity.mjs \
+            scripts/install.sh scripts/install-skill.sh keys
           cp -R .output/chrome-mv3 dist-release/chrome-mv3
           (cd dist-release && zip -r agnx-bridge-chrome-mv3.zip chrome-mv3)
+          cp scripts/install.sh dist-release/install.sh
           ls -la .output/*.zip 2>/dev/null || true
           cp .output/*.zip dist-release/ 2>/dev/null || true
       - uses: softprops/action-gh-release@v2
@@ -37,6 +39,13 @@ jobs:
           files: |
             dist-release/agnx-bridge-chrome-mv3.zip
             dist-release/agnx-bridge-native-host-runtime.tar.gz
+            dist-release/install.sh
             dist-release/*.zip
+          body: |
+            ## 安装
+            1. 下载 `agnx-bridge-chrome-mv3.zip`，解压后在 Chrome 开发者模式加载 `chrome-mv3/`
+            2. `AGNX_BRIDGE_GITHUB_OWNER=<owner> curl -fsSL https://raw.githubusercontent.com/<owner>/agnx-bridge/main/scripts/install.sh | bash`
+            3. 扩展 popup 开启桥接（默认端口 3054）
+            4. `curl -sS http://localhost:3054/api/agnx-bridge/health`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
