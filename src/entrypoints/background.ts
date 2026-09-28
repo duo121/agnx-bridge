@@ -42,7 +42,7 @@ export default defineBackground(() => {
     originalConsole.warn("[Bridge] Failed to initialize polling controller", error)
   })
 
-  backgroundLog("[Background] AGNX Webext Bridge started", summarizeValueForLog({
+  backgroundLog("[Background] AGNX Bridge started", summarizeValueForLog({
     version: chrome.runtime.getManifest().version,
     extensionId: chrome.runtime.id,
   }))

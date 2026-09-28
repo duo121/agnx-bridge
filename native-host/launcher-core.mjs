@@ -94,7 +94,7 @@ async function stopPid(pid) {
 
 async function probeServer(port, timeoutMs = 8000) {
   const deadline = Date.now() + timeoutMs
-  const url = `http://localhost:${port}/api/webext-bridge/health`
+  const url = `http://localhost:${port}/api/agnx-bridge/health`
 
   while (Date.now() < deadline) {
     try {

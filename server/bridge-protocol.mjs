@@ -134,9 +134,15 @@ function sanitizeResultPayload(input) {
 }
 
 export function readBridgeAuthToken(headers) {
-  const headerToken = headers["x-webext-bridge-token"]
-  if (typeof headerToken === "string" && headerToken.trim()) {
-    return headerToken.trim()
+  const agnxToken = headers["x-agnx-bridge-token"]
+  if (typeof agnxToken === "string" && agnxToken.trim()) {
+    return agnxToken.trim()
+  }
+
+  // 兼容旧扩展头
+  const legacyToken = headers["x-webext-bridge-token"]
+  if (typeof legacyToken === "string" && legacyToken.trim()) {
+    return legacyToken.trim()
   }
 
   const authHeader = typeof headers.authorization === "string" ? headers.authorization : ""
@@ -344,7 +350,7 @@ export function createBridgeProtocol({ store = new BridgeStore() } = {}) {
       .sort((a, b) => b.updatedAt - a.updatedAt)
 
     if (online.length === 0) {
-      throw new Error("暂无在线 webext bridge 客户端")
+      throw new Error("暂无在线 AGNX Bridge 客户端")
     }
 
     return online[0]
@@ -377,7 +383,7 @@ export function createBridgeProtocol({ store = new BridgeStore() } = {}) {
       cleanup()
       const current = Date.now()
       const preferredId = input.clientId ? ensureValidClientId(input.clientId) : undefined
-      const clientId = preferredId || `webext-${randomUUID().slice(0, 8)}`
+      const clientId = preferredId || `agnx-${randomUUID().slice(0, 8)}`
       const existing = store.clients.get(clientId)
       const token = randomUUID().replace(/-/g, "")
 

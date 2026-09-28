@@ -195,7 +195,7 @@ function buildCurlForCommand(
 ): string {
   const body = JSON.stringify(command)
   return [
-    `curl -sS -X POST ${shellSingleQuote(`${backendBaseUrl}/api/webext-bridge/exec`)}`,
+    `curl -sS -X POST ${shellSingleQuote(`${backendBaseUrl}/api/agnx-bridge/exec`)}`,
     `  -H ${shellSingleQuote("Content-Type: application/json")}`,
     `  -d ${shellSingleQuote(body)}`,
   ].join(" \\\n")

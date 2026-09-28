@@ -75,7 +75,7 @@ async function main() {
     manifestPath,
     `${JSON.stringify({
       name: nativeHostName,
-      description: "AGNX Webext Bridge local launcher",
+      description: "AGNX Bridge local launcher",
       path: runtimeLauncherScriptPath,
       type: "stdio",
       allowed_origins: [`chrome-extension://${extensionId}/`],

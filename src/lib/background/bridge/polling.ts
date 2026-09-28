@@ -269,7 +269,7 @@ async function ensureBridgeClient(force = false, signal?: AbortSignal): Promise<
     return bridgeClientState
   }
 
-  const response = await fetch(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/webext-bridge/register`, {
+  const response = await fetch(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/agnx-bridge/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -277,7 +277,7 @@ async function ensureBridgeClient(force = false, signal?: AbortSignal): Promise<
     signal,
     body: JSON.stringify({
       clientId: bridgeClientState?.clientId,
-      name: "agnx-webext-bridge-plugin",
+      name: "agnx-bridge",
       version: chrome.runtime.getManifest().version,
       extensionId: chrome.runtime.id,
     }),
@@ -285,7 +285,7 @@ async function ensureBridgeClient(force = false, signal?: AbortSignal): Promise<
 
   const result = await response.json() as BridgeRegisterResponse
   if (!response.ok || !result?.success) {
-    throw new Error(result?.error || "webext bridge register failed")
+    throw new Error(result?.error || "agnx-bridge register failed")
   }
 
   if (
@@ -313,11 +313,11 @@ async function reportBridgeResult(
   output: BridgeCommandResult,
   signal?: AbortSignal,
 ): Promise<void> {
-  const response = await fetch(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/webext-bridge/result`, {
+  const response = await fetch(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/agnx-bridge/result`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-webext-bridge-token": state.token,
+      "x-agnx-bridge-token": state.token,
     },
     signal,
     body: JSON.stringify({
@@ -338,7 +338,7 @@ async function reportBridgeResult(
 
   if (!response.ok) {
     const text = await response.text().catch(() => "")
-    throw new Error(`webext bridge result failed: ${response.status} ${text}`)
+    throw new Error(`agnx-bridge result failed: ${response.status} ${text}`)
   }
 }
 
@@ -349,14 +349,14 @@ async function bridgePollOnce(
   const state = await ensureBridgeClient(false, signal)
   if (!state) return
 
-  const pullUrl = new URL(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/webext-bridge/pull`)
+  const pullUrl = new URL(`${getBridgeBackendBaseUrl(bridgeRuntimeConfig)}/api/agnx-bridge/pull`)
   pullUrl.searchParams.set("clientId", state.clientId)
   pullUrl.searchParams.set("waitMs", String(bridgePullWaitMs))
 
   const response = await fetch(pullUrl.toString(), {
     method: "GET",
     headers: {
-      "x-webext-bridge-token": state.token,
+      "x-agnx-bridge-token": state.token,
     },
     signal,
   })
@@ -370,12 +370,12 @@ async function bridgePollOnce(
 
   if (!response.ok) {
     const text = await response.text().catch(() => "")
-    throw new Error(`webext bridge pull failed: ${response.status} ${text}`)
+    throw new Error(`agnx-bridge pull failed: ${response.status} ${text}`)
   }
 
   const payload = await response.json() as BridgePullResponse
   if (!payload?.success) {
-    throw new Error(payload?.error || "webext bridge pull failed")
+    throw new Error(payload?.error || "agnx-bridge pull failed")
   }
 
   const command = payload.data?.command

@@ -5,7 +5,7 @@
 
 ```text
 AI（Cursor / Codex / Claude Code）
-    │  curl POST /api/webext-bridge/exec   （结果再 GET /exec/:id 轮询）
+    │  curl POST /api/agnx-bridge/exec   （结果再 GET /exec/:id 轮询）
     ▼
 本机 bridge server（默认 :3054，native-host 拉起）
     │  扩展轮询拉取任务 / 回传结果
@@ -31,6 +31,8 @@ Chrome 扩展（AGNX Bridge）── 跑在你「日常已登录」的真 Chrome
 
 一句话：日常 Chrome 被抬成 AI 的本地运行时——API 管浏览器、JS 管页面、会话管过程。
 ```
+
+HTTP 入口统一为 **`/api/agnx-bridge/*`**（旧路径 `/api/webext-bridge/*` 仍兼容，文档与 Skill 只写新路径）。
 
 ---
 
@@ -67,10 +69,10 @@ pnpm native-host:install   # 安装本机 native host + bridge server 运行时
 3. 健康检查：
 
 ```bash
-curl -sS http://localhost:3054/api/webext-bridge/health
+curl -sS http://localhost:3054/api/agnx-bridge/health
 ```
 
-应看到 `clients.online >= 1`。之后在 Agent 里说「用 AGNX Bridge / agnx-bridge skill 列一下当前标签」即可。
+应看到 `clients.online >= 1`。之后在 Agent 里说「用 AGNX Bridge skill 列一下当前标签」即可。
 
 ### 只装 Skill（一行）
 
@@ -78,9 +80,11 @@ curl -sS http://localhost:3054/api/webext-bridge/health
 
 ```bash
 ./scripts/install-skill.sh
+# 或
+pnpm skill:install
 ```
 
-仓库上线 GitHub 后，也可用（把 `<owner>` 换成你的账号）：
+仓库上线 GitHub 后（把 `<owner>` 换成你的账号）：
 
 ```bash
 # 推荐：跨 Cursor / Claude / Codex 的 skills CLI
@@ -101,9 +105,9 @@ Skill 会装到：
 
 Agent 通过 Skill 学到的入口：
 
-- `GET  http://localhost:3054/api/webext-bridge/health`
-- `POST http://localhost:3054/api/webext-bridge/exec`
-- `GET  http://localhost:3054/api/webext-bridge/exec/:execId`
+- `GET  http://localhost:3054/api/agnx-bridge/health`
+- `POST http://localhost:3054/api/agnx-bridge/exec`
+- `GET  http://localhost:3054/api/agnx-bridge/exec/:execId`
 
 详细任务模板见 `skills/agnx-bridge/references/task-templates.md`。
 
@@ -122,9 +126,13 @@ Agent 通过 Skill 学到的入口：
 | `keys/extension-private-key.pem` | 稳定 extensionId（发布构建必须用它） |
 | `.output/chrome-mv3/` | `pnpm build` 后的可加载扩展目录 |
 
-稳定 extensionId（由 `keys/` 派生）：`eppdcemdgahndmmnnfhmgpcagpjiclcp`  
-Native host 名：`com.agnx.webext_bridge`  
-运行时目录：`~/Library/Application Support/AGNX/webext-bridge-native-host/`
+| 运行时标识 | 值 |
+|---|---|
+| extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp`（由 `keys/` 派生） |
+| Native Messaging 名 | `com.agnx.webext_bridge`（Chrome 注册名，历史兼容，勿轻易改） |
+| 本机运行时目录 | `~/Library/Application Support/AGNX/webext-bridge-native-host/`（目录名历史兼容） |
+
+> 上表里若仍出现 `webext` 字样，仅是 **系统注册名 / 磁盘目录** 的兼容保留，产品对外一律叫 **AGNX Bridge**。
 
 ---
 
@@ -150,6 +158,7 @@ pnpm build          # .output/chrome-mv3/
 pnpm zip            # .output/*.zip —— 未来挂到 GitHub Releases
 pnpm crx            # 可选 CRX（仍建议用户 Load unpacked）
 pnpm native-host:install
+pnpm skill:install
 ```
 
 换浏览器装 native host：
@@ -165,7 +174,7 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 - `~/Library/Application Support/AGNX/webext-bridge-native-host/.output/native-host.log`
 - `~/Library/Application Support/AGNX/webext-bridge-native-host/.output/bridge-server.stderr.log`
 
-协议摘要：扩展侧 `register` / `pull` / `result`；Agent 侧 `health` / `exec` / `exec/:id`。
+协议摘要：扩展侧 `register` / `pull` / `result`；Agent 侧 `health` / `exec` / `exec/:id`（均在 `/api/agnx-bridge` 下）。
 
 ---
 
@@ -178,22 +187,22 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 
 2. **不克隆也能装 native-host**  
    扩展无法自己启动 Node；必须装宿主。需要发布版安装器，例如：  
-   `curl …/install.sh | bash` 下载 runtime 到 `Application Support` 并写 NativeMessagingHosts，**无需** `pnpm install` 整仓。
+   `curl …/install.sh | bash` 下载 runtime 到 Application Support 并写 NativeMessagingHosts，**无需** `pnpm install` 整仓。
 
 3. **扩展安装体验**  
    Chrome 不允许随便装 GitHub 上的 `.crx`。开源阶段只能 **Load unpacked** 或上架 **Chrome Web Store**。README 必须写清，避免用户以为双击 zip 就能装。
 
-4. **端口与默认值统一**  
-   Skill / 文档默认 `3054`；popup 若曾示例 `3006`，易踩坑。发布前统一默认端口与文案。
+4. **端口默认值**  
+   文档与 Skill 默认 `3054`；请在 popup 里填同一端口。
 
 5. **跨平台**  
-   `install-native-host.mjs` 对 Windows 未支持；Linux 路径需再验。开源用户画像若含 Windows，要补齐。
+   `install-native-host.mjs` 对 Windows 未支持；Linux 路径需再验。
 
 6. **Skill 发现**  
-   仓库公开后，补 `npx skills add <owner>/agnx-bridge -g -y` 到 README 首页；可选登记 skills.sh。
+   仓库公开后，首页用 `npx skills add <owner>/agnx-bridge -g -y`；可选登记 skills.sh。
 
 7. **能力产品化（可选）**  
-   可交互元素快照、更安全的权限分层、一键「检测 bridge 是否在线」的 skill 开场检查——提升 Agent 首次成功率。
+   可交互元素快照、权限分层、skill 开场自动 `health` 检查。
 
 ---
 

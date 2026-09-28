@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE="${1:-http://localhost:3054/api/webext-bridge}"
+BASE="${1:-http://localhost:3054/api/agnx-bridge}"
 RESULT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/results"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 PREFIX="$RESULT_DIR/bridge-e2e-$TIMESTAMP"

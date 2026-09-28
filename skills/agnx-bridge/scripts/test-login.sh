@@ -2,9 +2,9 @@
 set -eu
 
 # 可通过环境变量覆盖：
-#   BASE=http://localhost:3054/api/webext-bridge sh .../test-login.sh
+#   BASE=http://localhost:3054/api/agnx-bridge sh .../test-login.sh
 #   LOGIN_URL=... sh .../test-login.sh
-BASE="${BASE:-http://localhost:3054/api/webext-bridge}"
+BASE="${BASE:-http://localhost:3054/api/agnx-bridge}"
 LOGIN_URL="${LOGIN_URL:-https://practicetestautomation.com/practice-test-login/}"
 OUTPUT_FILE="${OUTPUT_FILE:-/tmp/pta-login-capture.json}"
 LOGIN_USERNAME="${LOGIN_USERNAME:-student}"
@@ -115,7 +115,7 @@ while [ "$i" -lt 20 ]; do
 done
 
 if [ "$ONLINE" -le 0 ]; then
-  echo "[ERR] 当前没有在线 webext client，请先确保插件连接到 $BASE" >&2
+  echo "[ERR] 当前没有在线 AGNX Bridge client，请先确保插件连接到 $BASE" >&2
   exit 1
 fi
 

@@ -482,7 +482,7 @@ function printHelp() {
   node scripts/build-network-capture-command.mjs --tab-id 123 [options]
 
 输出：
-  默认输出 webext-bridge /exec 可直接提交的 JSON payload。
+  默认输出 agnx-bridge /exec 可直接提交的 JSON payload。
 
 关键参数：
   --tab-id <number>                 目标 tabId（必填）

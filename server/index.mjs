@@ -38,7 +38,7 @@ function getBoundPort(server) {
 
 function setJsonHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*")
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Webext-Bridge-Token")
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Agnx-Bridge-Token, X-Webext-Bridge-Token")
   response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS")
   response.setHeader("Content-Type", "application/json; charset=utf-8")
 }
@@ -60,7 +60,7 @@ function createDiscoveryServer(discoveryProvider) {
     }
 
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`)
-    if (request.method !== "GET" || url.pathname !== "/api/webext-bridge/discovery") {
+    if (request.method !== "GET" || url.pathname !== "/api/agnx-bridge/discovery") {
       setJsonHeaders(response)
       response.statusCode = 404
       response.end(JSON.stringify({ success: false, error: "路由不存在" }))
@@ -134,7 +134,7 @@ async function ensureDiscoveryServer() {
     return
   }
 
-  discoveryUrl = `http://localhost:${discoveryPort}/api/webext-bridge/discovery`
+  discoveryUrl = `http://localhost:${discoveryPort}/api/agnx-bridge/discovery`
   if (mainPort === discoveryPort) {
     return
   }
@@ -168,10 +168,10 @@ async function boot() {
   await ensureDiscoveryServer()
   await writeDiscoverySnapshot()
 
-  console.log("[webext-bridge-server] ready")
-  console.log(`[webext-bridge-server] base: ${mainBaseUrl}/api/webext-bridge`)
+  console.log("[agnx-bridge-server] ready")
+  console.log(`[agnx-bridge-server] base: ${mainBaseUrl}/api/agnx-bridge`)
   if (discoveryUrl) {
-    console.log(`[webext-bridge-server] discovery: ${discoveryUrl}`)
+    console.log(`[agnx-bridge-server] discovery: ${discoveryUrl}`)
   }
 }
 
@@ -179,7 +179,7 @@ async function shutdown(signal) {
   if (shuttingDown) return
   shuttingDown = true
 
-  console.log(`[webext-bridge-server] received ${signal}, shutting down`)
+  console.log(`[agnx-bridge-server] received ${signal}, shutting down`)
   await Promise.allSettled([
     closeServer(discoveryServer),
     closeServer(mainServer),
@@ -196,6 +196,6 @@ process.on("SIGTERM", () => {
 })
 
 boot().catch((error) => {
-  console.error("[webext-bridge-server] failed to start", error)
+  console.error("[agnx-bridge-server] failed to start", error)
   process.exit(1)
 })

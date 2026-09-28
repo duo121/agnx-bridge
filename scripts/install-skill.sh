@@ -77,5 +77,5 @@ fi
 echo
 echo "下一步："
 echo "  1. 确认 Chrome 已加载 AGNX Bridge 扩展，并在 popup 里开启桥接"
-echo "  2. curl -sS http://localhost:3054/api/webext-bridge/health"
+echo "  2. curl -sS http://localhost:3054/api/agnx-bridge/health"
 echo "  3. 在 Cursor / Claude / Codex 里让 Agent 使用 agnx-bridge skill"

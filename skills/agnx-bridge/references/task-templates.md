@@ -1,4 +1,4 @@
-# Webext Bridge Task Templates
+# AGNX Bridge Task Templates
 
 在 [../SKILL.md](../SKILL.md) 的统一 shell 模板基础上，把下面任一 JSON 请求体替换进 `<JSON_BODY>` 即可。
 
@@ -12,7 +12,7 @@
 
 ## Bridge 控制（端口/连接）
 
-以下模板用于 webext 内部控制通道（`chrome.runtime.sendMessage`），不经过 `/api/webext-bridge/exec`。
+以下模板用于扩展内部控制通道（`chrome.runtime.sendMessage`），不经过 `/api/agnx-bridge/exec`。
 
 ### 读取当前状态
 
@@ -60,7 +60,7 @@
 说明：
 
 - 该控制通道只返回当前快照，不提供历史记录。
-- 控制入口已在 webext 顶部按钮组中实现，可直接通过 UI 操作。
+- 控制入口已在扩展 popup 按钮组中实现，可直接通过 UI 操作。
 
 ## 标签页与导航
 
@@ -498,14 +498,14 @@
 
 ```bash
 # 1) 先拿到活动标签页 tabId
-BASE=http://localhost:3054/api/webext-bridge
+BASE=http://localhost:3054/api/agnx-bridge
 TAB_ID=$(curl -sS -X POST "$BASE/exec" \
   -H 'Content-Type: application/json' \
   -d '{"waitMs":20000,"command":{"kind":"browser-agent","method":"tabs.query","args":[{"active":true,"currentWindow":true}]}}' \
   | jq -r '.data.exec.result[0].id')
 
 # 2) 生成 payload（像“调用函数”一样传参）
-PAYLOAD=$(node packages/assets/skills/webext-bridge/scripts/build-network-capture-command.mjs \
+PAYLOAD=$(node skills/agnx-bridge/scripts/build-network-capture-command.mjs \
   --tab-id "$TAB_ID" \
   --click-selector '[data-testid="add-user"]' \
   --click-text-regex '新增用户|Add User' \

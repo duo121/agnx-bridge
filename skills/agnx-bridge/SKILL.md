@@ -3,7 +3,7 @@ name: agnx-bridge
 description: 通过本机 AGNX Bridge HTTP API 驱动已在线 Chrome 扩展，提供页面导航、页面脚本执行、截图、页面/插件 console、CDP 调试与通用 Chrome API 自动化。适用于网页采集、页面交互、浏览器操作和插件侧诊断。
 engine: automation
 tags:
-  - webext
+  - agnx
   - bridge
   - chrome
   - automation
@@ -35,14 +35,14 @@ tags:
 
 ## 前置条件
 
-- Bridge HTTP API 默认在 `http://localhost:3054`（由扩展 popup「开启桥接」经 **native-host** 拉起；不必依赖其它 Drawer 前端）
+- Bridge HTTP API 默认在 `http://localhost:3054`（由扩展 popup「开启桥接」经 **native-host** 拉起；不必依赖其它前端进程）
 - 浏览器已加载 **AGNX Bridge** 扩展且桥接在线
 - 建议先执行健康检查，确认存在在线 client
 
 快速检查：
 
 ```bash
-BASE=http://localhost:3054/api/webext-bridge
+BASE=http://localhost:3054/api/agnx-bridge
 curl -sS "$BASE/health"
 ```
 
@@ -55,11 +55,11 @@ curl -sS "$BASE/health"
 | 角色 | 说明 |
 |---|---|
 | 开源仓库 | `agnx-bridge`（扩展 + `skills/agnx-bridge`） |
-| 扩展清单名 | `AGNX Bridge` / `AGNX Webext Bridge` |
+| 扩展清单名 | `AGNX Bridge` |
 | 构建产物 | 仓库内 `.output/chrome-mv3/`（或 GitHub Releases 的 zip） |
 | extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp`（由仓库 `keys/extension-private-key.pem` 派生） |
-| 运行时根 | `~/Library/Application Support/AGNX/webext-bridge-native-host/` |
-| Native host | `com.agnx.webext_bridge` |
+| 运行时根 | `~/Library/Application Support/AGNX/webext-bridge-native-host/`（目录名历史兼容） |
+| Native host | `com.agnx.webext_bridge`（Chrome 注册名，历史兼容） |
 | Skill 安装位置 | `~/.cursor/skills/agnx-bridge/` · `~/.claude/skills/agnx-bridge/` · `~/.codex/skills/agnx-bridge/` |
 
 用户安装 Skill：
@@ -84,14 +84,14 @@ npx skills add <owner>/agnx-bridge -g -y
 
 常用入口只有三个：
 
-- `GET /api/webext-bridge/health`
-- `POST /api/webext-bridge/exec`
-- `GET /api/webext-bridge/exec/:execId`
+- `GET /api/agnx-bridge/health`
+- `POST /api/agnx-bridge/exec`
+- `GET /api/agnx-bridge/exec/:execId`
 
 统一 shell 模板只保留一次：
 
 ```bash
-BASE=http://localhost:3054/api/webext-bridge
+BASE=http://localhost:3054/api/agnx-bridge
 
 curl -sS "$BASE/health"
 
@@ -111,7 +111,7 @@ curl -sS -X POST "$BASE/exec" \
 
 ## Bridge 控制（端口/连接）
 
-`ai-e2e-testing` 在 webext 内提供独立控制通道，用于管理 bridge 长连接配置与运行状态：
+扩展 popup / background 提供独立控制通道，用于管理 bridge 长连接配置与运行状态：
 
 - `BRIDGE_CONTROL_GET_STATE`
 - `BRIDGE_CONTROL_SET_CONFIG`
@@ -121,7 +121,7 @@ curl -sS -X POST "$BASE/exec" \
 
 说明：
 
-- 控制消息通过 `chrome.runtime.sendMessage` 直接发送给扩展 background，不经过 `/api/webext-bridge/exec`。
+- 控制消息通过 `chrome.runtime.sendMessage` 直接发送给扩展 background，不经过 `/api/agnx-bridge/exec`。
 - 当前实现仅保留“当前快照”，不包含历史记录能力。
 - 任务模板见 [references/task-templates.md](references/task-templates.md) 的「Bridge 控制（端口/连接）」章节。
 
@@ -302,7 +302,7 @@ curl -sS -X POST "$BASE/exec" \
 
 - [`scripts/build-network-capture-command.mjs`](scripts/build-network-capture-command.mjs)
 
-这个脚本会生成可直接提交到 `/api/webext-bridge/exec` 的 `page-agent` payload，并统一返回：
+这个脚本会生成可直接提交到 `/api/agnx-bridge/exec` 的 `page-agent` payload，并统一返回：
 
 - `requests[]`：请求侧规范数据（`requestId/transport/url/method/headers/bodyPreview/timestamp`）
 - `responses[]`：响应侧规范数据（`requestId/status/ok/headers/bodyPreview/duration`）
@@ -391,7 +391,7 @@ return { title: document.title, url: location.href, chunks }
 默认（完全暴露）策略：
 
 ```md
-你可以使用 webext-bridge 的全部能力：
+你可以使用 AGNX Bridge 的全部能力：
 - browser-agent：允许调用已暴露的 chrome.* API（按扩展权限生效）
 - page-agent：允许页面脚本执行与交互
 - console-capture：允许 page/extension 日志采集
@@ -417,7 +417,7 @@ return { title: document.title, url: location.href, chunks }
 
 ## 注意事项
 
-- Webext background 必须在线
+- AGNX Bridge 扩展 background 必须在线
 - `browser-agent` 当前不内置危险 API 拦截，若需限制请在 skill 提示词中声明允许/禁止范围
 - `page-agent` 不能在 `chrome://`、`chrome-extension://`、`about:` 等特殊页面执行
 - `page-agent` 在页面 Main World 执行，仍可能受目标站点页面环境影响
