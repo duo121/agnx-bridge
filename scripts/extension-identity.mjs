@@ -15,7 +15,7 @@ const localKeyPath = resolve(localKeysDir, "extension-private-key.pem")
 
 export const keysDir = existsSync(committedKeyPath) ? committedKeysDir : localKeysDir
 export const keyPath = existsSync(committedKeyPath) ? committedKeyPath : localKeyPath
-export const nativeHostName = "com.agnx.webext_bridge"
+export const nativeHostName = "com.agnx.bridge"
 
 function hexToExtensionAlphabet(hex) {
   return hex.replace(/[0-9a-f]/g, (char) => String.fromCharCode(97 + Number.parseInt(char, 16)))

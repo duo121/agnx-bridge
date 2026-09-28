@@ -1,4 +1,4 @@
-const BRIDGE_NATIVE_HOST_NAME = "com.agnx.webext_bridge"
+const BRIDGE_NATIVE_HOST_NAME = "com.agnx.bridge"
 const NATIVE_HOST_REQUEST_TIMEOUT_MS = 15_000
 const NATIVE_HOST_RECONNECT_DELAY_MS = 1_000
 

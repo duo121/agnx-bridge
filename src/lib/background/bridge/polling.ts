@@ -17,14 +17,14 @@ import type {
 } from "../../types/bridge"
 import { ensureNativeBridgeServer, stopNativeBridgeServer } from "../native-host"
 
-interface CreateWebextBridgePollingControllerOptions {
+interface CreateAgnxBridgePollingControllerOptions {
   executeCommand: (command: Record<string, unknown>) => Promise<BridgeCommandResult>
   log?: (...args: unknown[]) => void
   warn?: (...args: unknown[]) => void
 }
 
-const BRIDGE_STORAGE_KEY = "agnx-webext-bridge-client"
-const BRIDGE_HISTORY_STORAGE_KEY = "agnx-webext-bridge-command-history"
+const BRIDGE_STORAGE_KEY = "agnx-bridge-client"
+const BRIDGE_HISTORY_STORAGE_KEY = "agnx-bridge-command-history"
 const DEFAULT_PULL_WAIT_MS = 25000
 const DEFAULT_ACTIVE_RETRY_MS = 350
 const BRIDGE_ERROR_RETRY_MS = 3000
@@ -343,7 +343,7 @@ async function reportBridgeResult(
 }
 
 async function bridgePollOnce(
-  options: CreateWebextBridgePollingControllerOptions,
+  options: CreateAgnxBridgePollingControllerOptions,
   signal?: AbortSignal,
 ): Promise<void> {
   const state = await ensureBridgeClient(false, signal)
@@ -423,7 +423,7 @@ async function bridgePollOnce(
 }
 
 function scheduleNextBridgePoll(
-  options: CreateWebextBridgePollingControllerOptions,
+  options: CreateAgnxBridgePollingControllerOptions,
   delayMs: number,
 ): void {
   if (!bridgeRuntimeConfig.enabled || !bridgePollingStarted) return
@@ -436,7 +436,7 @@ function scheduleNextBridgePoll(
   }, delayMs)
 }
 
-async function runBridgePollLoop(options: CreateWebextBridgePollingControllerOptions): Promise<void> {
+async function runBridgePollLoop(options: CreateAgnxBridgePollingControllerOptions): Promise<void> {
   if (!bridgeRuntimeConfig.enabled || !bridgePollingStarted || bridgePollInFlight) return
   bridgePollInFlight = true
   bridgeAbortController = new AbortController()
@@ -494,7 +494,7 @@ async function stopBridgePolling(): Promise<void> {
   resetBridgeRuntimeState()
 }
 
-function startBridgePolling(options: CreateWebextBridgePollingControllerOptions): void {
+function startBridgePolling(options: CreateAgnxBridgePollingControllerOptions): void {
   if (!bridgeRuntimeConfig.enabled || bridgePollingStarted) return
   bridgePollingStarted = true
   bridgeLastError = undefined
@@ -518,7 +518,7 @@ function getBridgeRuntimeSnapshot(): BridgeRuntimeSnapshot {
   }
 }
 
-export interface WebextBridgePollingController {
+export interface AgnxBridgePollingController {
   ensureInitialized: () => Promise<void>
   getSnapshot: () => BridgeRuntimeSnapshot
   setConfig: (config: BridgeRuntimeConfig) => Promise<BridgeRuntimeSnapshot>
@@ -527,9 +527,9 @@ export interface WebextBridgePollingController {
   clearHistory: () => Promise<BridgeCommandHistoryEntry[]>
 }
 
-export function createWebextBridgePollingController(
-  options: CreateWebextBridgePollingControllerOptions,
-): WebextBridgePollingController {
+export function createAgnxBridgePollingController(
+  options: CreateAgnxBridgePollingControllerOptions,
+): AgnxBridgePollingController {
   async function syncBridgePollingToConfig(rethrow = false): Promise<void> {
     try {
       await stopBridgePolling()

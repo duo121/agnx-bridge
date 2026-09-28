@@ -32,7 +32,7 @@ Chrome 扩展（AGNX Bridge）── 跑在你「日常已登录」的真 Chrome
 一句话：日常 Chrome 被抬成 AI 的本地运行时——API 管浏览器、JS 管页面、会话管过程。
 ```
 
-HTTP 入口统一为 **`/api/agnx-bridge/*`**（旧路径 `/api/webext-bridge/*` 仍兼容，文档与 Skill 只写新路径）。
+HTTP API：**`/api/agnx-bridge/*`**
 
 ---
 
@@ -66,7 +66,7 @@ git clone <本仓库 URL> agnx-bridge
 cd agnx-bridge
 pnpm install
 pnpm build                 # 产出 .output/chrome-mv3/
-./scripts/install.sh       # native-host + Skill（等价于 native-host:install + skill:install）
+./scripts/install.sh       # native-host + Skill
 ```
 
 然后：
@@ -84,9 +84,9 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 ### 只装 Skill / 只装宿主
 
 ```bash
-./scripts/install-skill.sh              # 仅 Skill
-pnpm native-host:install                # 仅 native-host
-AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh   # 一键但不装 Skill
+./scripts/install-skill.sh
+pnpm native-host:install
+AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh
 ```
 
 仓库上线 GitHub 后也可用：
@@ -103,13 +103,13 @@ Skill 会装到：
 | Claude Code | `~/.claude/skills/agnx-bridge/` |
 | Codex | `~/.codex/skills/agnx-bridge/` |
 
-Agent 通过 Skill 学到的入口：
+Agent 入口：
 
 - `GET  http://localhost:3054/api/agnx-bridge/health`
 - `POST http://localhost:3054/api/agnx-bridge/exec`
 - `GET  http://localhost:3054/api/agnx-bridge/exec/:execId`
 
-详细任务模板见 `skills/agnx-bridge/references/task-templates.md`。
+任务模板：`skills/agnx-bridge/references/task-templates.md`。
 
 ---
 
@@ -120,33 +120,32 @@ Agent 通过 Skill 学到的入口：
 | `src/` | Chrome MV3 扩展源码 |
 | `server/` | 本机 bridge HTTP server |
 | `native-host/` | Native Messaging 宿主 |
-| `skills/agnx-bridge/` | Agent Skill（给 Claude / Codex / Cursor） |
+| `skills/agnx-bridge/` | Agent Skill |
 | `scripts/install.sh` | **一键**：native-host + Skill |
-| `scripts/install-native-host.mjs` | 仅安装本机宿主与 server 运行时 |
+| `scripts/install-native-host.mjs` | 仅安装本机宿主 |
 | `scripts/install-skill.sh` | 仅安装 Skill |
-| `keys/extension-private-key.pem` | 稳定 extensionId（发布构建必须用它） |
+| `keys/extension-private-key.pem` | 稳定 extensionId |
 | `.output/chrome-mv3/` | `pnpm build` 后的可加载扩展目录 |
 
 | 运行时标识 | 值 |
 |---|---|
-| extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp`（由 `keys/` 派生） |
-| Native Messaging 名 | `com.agnx.webext_bridge`（Chrome 注册名，历史兼容，勿轻易改） |
-| 本机运行时目录 | `~/Library/Application Support/AGNX/webext-bridge-native-host/`（目录名历史兼容） |
-
-> 上表里若仍出现 `webext` 字样，仅是 **系统注册名 / 磁盘目录** 的兼容保留，产品对外一律叫 **AGNX Bridge**。
+| 产品名 | **AGNX Bridge** |
+| extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp` |
+| Native Messaging 名 | `com.agnx.bridge` |
+| 本机运行时目录 | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| HTTP API | `/api/agnx-bridge/*` |
+| 默认端口 | `3054` |
 
 ---
 
-## 能力边界（诚实说明）
+## 能力边界
 
-| 有 | 没有（缺口） |
+| 有 | 没有 |
 |---|---|
-| 动态 `chrome.*` / CDP（`browser-agent`） | 一等公民「可交互元素列表 / AX observe / ref 点击」 |
-| 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前靠开发者模式加载） |
-| 会话式 console 采集 | 不装 native-host 就「只下 zip 即用」 |
-| 复用真实登录态与日常标签 | Windows 原生宿主安装（当前脚本以 macOS 为主，Linux 部分支持） |
-
-点选页面元素：请在 `page-agent` 里自写选择器，或自行拼 CDP；这不是内置工具。
+| 动态 `chrome.*` / CDP（`browser-agent`） | 一等公民「可交互元素列表 / AX observe / ref」 |
+| 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前 Load unpacked） |
+| 会话式 console 采集 | 无 Node 的纯 zip 安装 |
+| 复用真实登录态与日常标签 | Windows native-host（当前以 macOS 为主） |
 
 ---
 
@@ -155,15 +154,11 @@ Agent 通过 Skill 学到的入口：
 ```bash
 pnpm install
 pnpm typecheck
-pnpm build          # .output/chrome-mv3/
-pnpm zip            # .output/*.zip —— 未来挂到 GitHub Releases
-pnpm crx            # 可选 CRX（仍建议用户 Load unpacked）
-pnpm native-host:install
-pnpm skill:install
-./scripts/install.sh    # 推荐：两者一起
+pnpm build
+pnpm zip
+pnpm crx
+./scripts/install.sh
 ```
-
-换浏览器装 native host：
 
 ```bash
 NATIVE_HOST_BROWSER=edge pnpm native-host:install
@@ -171,36 +166,19 @@ NATIVE_HOST_BROWSER=brave pnpm native-host:install
 NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 ```
 
-排查日志：
+日志：
 
-- `~/Library/Application Support/AGNX/webext-bridge-native-host/.output/native-host.log`
-- `~/Library/Application Support/AGNX/webext-bridge-native-host/.output/bridge-server.stderr.log`
-
-协议摘要：扩展侧 `register` / `pull` / `result`；Agent 侧 `health` / `exec` / `exec/:id`（均在 `/api/agnx-bridge` 下）。
+- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
+- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
 
 ---
 
-## 开源缺口（相对「下包 + 一行命令」）
+## 开源缺口
 
-要对齐文首「目标用户路径」，还缺这些交付，建议按优先级补：
-
-1. **GitHub Release 产物**  
-   已有 `.github/workflows/release.yml`：打 `v*` tag 后构建并上传 `agnx-bridge-chrome-mv3.zip`。公开仓库并推送 tag 后，用户才可「只在网页上下载」。
-
-2. **不克隆装宿主**  
-   已提供 `scripts/install.sh`（可 `curl | bash`）。仍依赖 Node 与 GitHub 上的源码/归档可读；真正「只下 zip、无 Node」需再做打包安装器。
-
-3. **扩展安装体验**  
-   Chrome 不允许随便装 GitHub 上的 `.crx`。开源阶段只能 **Load unpacked** 或上架 **Chrome Web Store**。
-
-4. **跨平台**  
-   `install-native-host.mjs` 对 Windows 未支持；Linux 路径需再验。
-
-5. **Skill 发现**  
-   仓库公开后，首页用 `npx skills add <owner>/agnx-bridge -g -y`；可选登记 skills.sh。
-
-6. **能力产品化（可选）**  
-   可交互元素快照、权限分层、skill 开场自动 `health` 检查。
+1. **GitHub Release**：打 `v*` tag 后上传 `agnx-bridge-chrome-mv3.zip`（workflow 已有）
+2. **扩展商店**：开源阶段靠 Load unpacked，或上架 Chrome Web Store
+3. **Windows** native-host
+4. **可交互元素快照**（可选能力）
 
 ---
 

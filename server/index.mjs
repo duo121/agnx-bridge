@@ -38,7 +38,7 @@ function getBoundPort(server) {
 
 function setJsonHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*")
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Agnx-Bridge-Token, X-Webext-Bridge-Token")
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Agnx-Bridge-Token")
   response.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS")
   response.setHeader("Content-Type", "application/json; charset=utf-8")
 }
@@ -60,10 +60,7 @@ function createDiscoveryServer(discoveryProvider) {
     }
 
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`)
-    const isDiscovery =
-      url.pathname === "/api/agnx-bridge/discovery"
-      || url.pathname === "/api/webext-bridge/discovery"
-    if (request.method !== "GET" || !isDiscovery) {
+    if (request.method !== "GET" || url.pathname !== "/api/agnx-bridge/discovery") {
       setJsonHeaders(response)
       response.statusCode = 404
       response.end(JSON.stringify({ success: false, error: "路由不存在" }))

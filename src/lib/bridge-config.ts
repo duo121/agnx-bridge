@@ -1,9 +1,7 @@
 import type { BridgeRuntimeConfig } from "./types/bridge-control"
 
 export const BRIDGE_CONFIG_STORAGE_KEY = "agnx-bridge-config"
-const DEFAULT_ENABLED = (import.meta.env.VITE_AGNX_BRIDGE_ENABLED
-  ?? import.meta.env.VITE_WEBEXT_BRIDGE_ENABLED
-  ?? "0") === "1"
+const DEFAULT_ENABLED = (import.meta.env.VITE_AGNX_BRIDGE_ENABLED ?? "0") === "1"
 const DEFAULT_PORT = resolveDefaultPort()
 
 /** 与文档 / Skill 默认端口一致 */

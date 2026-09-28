@@ -1,6 +1,6 @@
 import { defineBackground } from "wxt/utils/define-background"
 import { createBridgeCommandExecutor } from "../lib/background/bridge/command-executor"
-import { createWebextBridgePollingController } from "../lib/background/bridge/polling"
+import { createAgnxBridgePollingController } from "../lib/background/bridge/polling"
 import { createConsoleCaptureRuntime } from "../lib/background/console-capture/runtime"
 import { registerBridgeControlMessageRouter } from "../lib/background/control-router"
 import { executeChromeApi, summarizeValueForLog } from "../lib/background/executors/chrome-api"
@@ -23,7 +23,7 @@ export default defineBackground(() => {
     resolveConsoleCaptureTarget: consoleCaptureRuntime.resolveConsoleCaptureTarget,
     executeConsoleCaptureAction: consoleCaptureRuntime.executeConsoleCaptureAction,
   })
-  const bridgeController = createWebextBridgePollingController({
+  const bridgeController = createAgnxBridgePollingController({
     executeCommand: executeBridgeCommand,
     log: backgroundLog,
     warn: originalConsole.warn,

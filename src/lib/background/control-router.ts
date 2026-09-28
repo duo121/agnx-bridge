@@ -2,10 +2,10 @@ import type {
   BridgeControlMessage,
   BridgeControlResponse,
 } from "../types/bridge-control"
-import type { WebextBridgePollingController } from "./bridge/polling"
+import type { AgnxBridgePollingController } from "./bridge/polling"
 
 interface RegisterBridgeControlRouterOptions {
-  controller: WebextBridgePollingController
+  controller: AgnxBridgePollingController
   log?: (...args: unknown[]) => void
 }
 

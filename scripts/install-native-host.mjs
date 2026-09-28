@@ -7,7 +7,7 @@ const targetBrowser = (process.env.NATIVE_HOST_BROWSER || "chrome").trim().toLow
 const nodeBinary = process.env.NATIVE_HOST_NODE || process.execPath
 const runtimeRoot = resolve(
   process.env.HOME || "",
-  "Library/Application Support/AGNX/webext-bridge-native-host",
+  "Library/Application Support/AGNX/agnx-bridge-native-host",
 )
 const runtimeHostScriptPath = resolve(runtimeRoot, "native-host/host.mjs")
 const runtimeLauncherScriptPath = resolve(runtimeRoot, "native-host-launcher.sh")

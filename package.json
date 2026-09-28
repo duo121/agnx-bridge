@@ -13,7 +13,7 @@
     "bridge:server": "node ./server/index.mjs",
     "native-host:install": "node ./scripts/install-native-host.mjs",
     "skill:install": "bash ./scripts/install-skill.sh",
-    "install": "bash ./scripts/install.sh",
+    "setup": "bash ./scripts/install.sh",
     "build": "wxt build",
     "typecheck": "tsc --noEmit",
     "zip": "wxt zip",

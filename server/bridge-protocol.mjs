@@ -134,15 +134,9 @@ function sanitizeResultPayload(input) {
 }
 
 export function readBridgeAuthToken(headers) {
-  const agnxToken = headers["x-agnx-bridge-token"]
-  if (typeof agnxToken === "string" && agnxToken.trim()) {
-    return agnxToken.trim()
-  }
-
-  // 兼容旧扩展头
-  const legacyToken = headers["x-webext-bridge-token"]
-  if (typeof legacyToken === "string" && legacyToken.trim()) {
-    return legacyToken.trim()
+  const token = headers["x-agnx-bridge-token"]
+  if (typeof token === "string" && token.trim()) {
+    return token.trim()
   }
 
   const authHeader = typeof headers.authorization === "string" ? headers.authorization : ""

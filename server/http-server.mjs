@@ -1,19 +1,11 @@
 import http from "node:http"
 import { parseBridgeCommand, readBridgeAuthToken } from "./bridge-protocol.mjs"
 
-/** 对外主路径 `/api/agnx-bridge`；兼容旧路径 `/api/webext-bridge`。 */
-function canonicalizeApiPath(pathname) {
-  if (pathname === "/api/webext-bridge" || pathname.startsWith("/api/webext-bridge/")) {
-    return pathname.replace("/api/webext-bridge", "/api/agnx-bridge")
-  }
-  return pathname
-}
-
 function setCommonHeaders(response) {
   response.setHeader("Access-Control-Allow-Origin", "*")
   response.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Agnx-Bridge-Token, X-Webext-Bridge-Token",
+    "Content-Type, Authorization, X-Agnx-Bridge-Token",
   )
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
   response.setHeader("Content-Type", "application/json; charset=utf-8")
@@ -78,7 +70,7 @@ export function createBridgeHttpServer({
     }
 
     const url = createRequestUrl(request)
-    const pathname = canonicalizeApiPath(url.pathname)
+    const pathname = url.pathname
 
     try {
       if (request.method === "GET" && pathname === "/api/agnx-bridge/discovery") {
