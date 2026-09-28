@@ -60,7 +60,10 @@ function createDiscoveryServer(discoveryProvider) {
     }
 
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`)
-    if (request.method !== "GET" || url.pathname !== "/api/agnx-bridge/discovery") {
+    const isDiscovery =
+      url.pathname === "/api/agnx-bridge/discovery"
+      || url.pathname === "/api/webext-bridge/discovery"
+    if (request.method !== "GET" || !isDiscovery) {
       setJsonHeaders(response)
       response.statusCode = 404
       response.end(JSON.stringify({ success: false, error: "路由不存在" }))
