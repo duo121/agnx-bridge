@@ -1,0 +1,31 @@
+{
+  "name": "agnx-bridge",
+  "version": "0.1.0",
+  "description": "AGNX Bridge — Chrome extension + Agent Skill that turns your logged-in browser into an AI runtime",
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_GITHUB_OWNER/agnx-bridge.git"
+  },
+  "scripts": {
+    "dev": "wxt",
+    "bridge:server": "node ./server/index.mjs",
+    "native-host:install": "node ./scripts/install-native-host.mjs",
+    "skill:install": "bash ./scripts/install-skill.sh",
+    "build": "wxt build",
+    "typecheck": "tsc --noEmit",
+    "zip": "wxt zip",
+    "crx": "pnpm build && node ./scripts/pack-crx.mjs"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.36",
+    "@types/node": "^24.10.8",
+    "typescript": "^5.9.3",
+    "wxt": "^0.20.13"
+  }
+}

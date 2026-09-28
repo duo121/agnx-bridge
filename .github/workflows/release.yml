@@ -1,0 +1,42 @@
+# 场景：GitHub Release 构建扩展 zip，供用户下载后 Load unpacked
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm zip
+      - name: Pack native-host runtime
+        run: |
+          mkdir -p dist-release
+          tar -czf dist-release/agnx-bridge-native-host-runtime.tar.gz \
+            native-host server scripts/install-native-host.mjs scripts/extension-identity.mjs keys
+          cp -R .output/chrome-mv3 dist-release/chrome-mv3
+          (cd dist-release && zip -r agnx-bridge-chrome-mv3.zip chrome-mv3)
+          ls -la .output/*.zip 2>/dev/null || true
+          cp .output/*.zip dist-release/ 2>/dev/null || true
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist-release/agnx-bridge-chrome-mv3.zip
+            dist-release/agnx-bridge-native-host-runtime.tar.gz
+            dist-release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

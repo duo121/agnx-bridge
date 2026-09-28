@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AGNX Bridge Control</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <section class="hero">
+        <p class="eyebrow">LOCAL BRIDGE CONTROL</p>
+        <div class="hero-row">
+          <div>
+            <h1>AGNX Bridge</h1>
+            <p class="subtitle">用一个端口，接管本机浏览器自动化桥接。</p>
+          </div>
+          <div class="status-pill" id="statusPill" data-tone="paused">已关闭</div>
+        </div>
+      </section>
+
+      <section class="tabs">
+        <button class="tab-button" id="tabControlButton" data-active="true">控制台</button>
+        <button class="tab-button" id="tabHistoryButton" data-active="false">历史记录</button>
+      </section>
+
+      <div class="tab-panel" id="controlTabPanel">
+        <section class="card">
+          <div class="label-row">
+            <label for="portInput">桥接端口</label>
+            <span class="label-badge">localhost</span>
+          </div>
+          <div class="field-shell">
+            <span class="field-prefix">localhost:</span>
+            <input id="portInput" type="number" min="1" max="65535" inputmode="numeric" />
+          </div>
+          <p class="hint">修改端口后点击开启，插件会通过本地宿主自动拉起对应端口的 bridge server。</p>
+
+          <div class="meta-grid">
+            <article class="meta-card">
+              <span class="meta-label">目标地址</span>
+              <strong id="backendUrl">http://localhost:3002</strong>
+            </article>
+            <article class="meta-card">
+              <span class="meta-label">在线 Client</span>
+              <strong id="clientId">未注册</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="feedback">
+          <div class="message" id="message">输入端口后点击开启，插件会自动拉起并连接对应端口的本地 bridge 服务。</div>
+          <div class="status-meta" id="statusMeta">状态加载中...</div>
+        </section>
+
+        <section class="actions">
+          <button class="action action-primary" id="enableButton">开启桥接</button>
+          <button class="action action-secondary" id="disableButton">关闭桥接</button>
+        </section>
+      </div>
+
+      <div class="tab-panel tab-panel-hidden" id="historyTabPanel">
+        <section class="history-actions">
+          <button class="action action-ghost" id="refreshHistoryButton">刷新</button>
+          <button class="action action-ghost" id="copyAllCurlButton">复制全部 curl</button>
+          <button class="action action-ghost" id="clearHistoryButton">清空历史</button>
+        </section>
+
+        <section class="history-shell">
+          <div class="history-empty" id="historyEmpty">暂无执行历史，等 AI 通过 bridge 调用后会自动记录。</div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
