@@ -203,26 +203,78 @@ h1 {
   line-height: 1.5;
 }
 
-.meta-grid {
+.connection-summary {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
-.meta-card {
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255, 247, 233, 0.06), rgba(255, 247, 233, 0.03));
+.connection-block {
+  min-width: 0;
 }
 
-.meta-card strong {
+.connection-block .meta-label {
   display: block;
-  margin-top: 8px;
+  margin-bottom: 6px;
+}
+
+.connection-block > strong {
+  display: block;
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: break-all;
+}
+
+.url-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.url-row strong {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.action-tiny {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 11px;
+  border-radius: 10px;
+}
+
+.client-id-toggle {
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.client-id-toggle:hover {
+  color: #ffc57a;
+}
+
+.client-id-value {
+  display: block;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 247, 233, 0.04);
+  color: var(--muted);
+  font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.4;
   word-break: break-all;
 }
 
@@ -296,8 +348,12 @@ h1 {
 
 .action:disabled {
   opacity: 0.56;
-  cursor: wait;
+  cursor: not-allowed;
   transform: none;
+}
+
+.action:disabled::after {
+  display: none;
 }
 
 .action-primary {
@@ -310,6 +366,12 @@ h1 {
   border-color: var(--line-strong);
   background: var(--panel-strong);
   color: var(--text);
+}
+
+.action-danger {
+  border-color: rgba(255, 143, 116, 0.42);
+  background: linear-gradient(180deg, rgba(255, 143, 116, 0.28), rgba(180, 72, 52, 0.55));
+  color: #ffe8e1;
 }
 
 .action-ghost {
@@ -345,6 +407,13 @@ h1 {
 
 .tab-panel-hidden {
   display: none;
+}
+
+.history-intro {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .history-actions {

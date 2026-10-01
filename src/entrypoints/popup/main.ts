@@ -9,7 +9,10 @@ type PopupTab = "control" | "history"
 
 const portInput = document.querySelector<HTMLInputElement>("#portInput")
 const backendUrl = document.querySelector<HTMLElement>("#backendUrl")
+const clientSummary = document.querySelector<HTMLElement>("#clientSummary")
 const clientId = document.querySelector<HTMLElement>("#clientId")
+const clientIdToggle = document.querySelector<HTMLButtonElement>("#clientIdToggle")
+const copyUrlButton = document.querySelector<HTMLButtonElement>("#copyUrlButton")
 const statusPill = document.querySelector<HTMLElement>("#statusPill")
 const message = document.querySelector<HTMLElement>("#message")
 const statusMeta = document.querySelector<HTMLElement>("#statusMeta")
@@ -28,6 +31,7 @@ const clearHistoryButton = document.querySelector<HTMLButtonElement>("#clearHist
 let busy = false
 let refreshTimer: number | null = null
 let portDraftDirty = false
+let clientIdExpanded = false
 let activeTab: PopupTab = "control"
 let currentSnapshot: BridgeRuntimeSnapshot | null = null
 let currentHistory: BridgeCommandHistoryEntry[] = []
@@ -48,7 +52,10 @@ function requireElement<T extends HTMLElement>(element: T | null, id: string): T
 const ui = {
   portInput: requireElement(portInput, "portInput"),
   backendUrl: requireElement(backendUrl, "backendUrl"),
+  clientSummary: requireElement(clientSummary, "clientSummary"),
   clientId: requireElement(clientId, "clientId"),
+  clientIdToggle: requireElement(clientIdToggle, "clientIdToggle"),
+  copyUrlButton: requireElement(copyUrlButton, "copyUrlButton"),
   statusPill: requireElement(statusPill, "statusPill"),
   message: requireElement(message, "message"),
   statusMeta: requireElement(statusMeta, "statusMeta"),
@@ -65,17 +72,44 @@ const ui = {
   clearHistoryButton: requireElement(clearHistoryButton, "clearHistoryButton"),
 }
 
-function formatTime(timestamp?: number): string {
-  if (!timestamp) return "--:--:--"
-  return new Date(timestamp).toLocaleTimeString("zh-CN", {
-    hour12: false,
-  })
-}
-
 function formatDateTime(timestamp: number): string {
   return new Date(timestamp).toLocaleString("zh-CN", {
     hour12: false,
   })
+}
+
+function formatHeartbeatAge(updatedAt?: number): string {
+  if (!updatedAt) return "尚无心跳"
+  const ageSec = Math.max(0, Math.floor((Date.now() - updatedAt) / 1000))
+  if (ageSec < 5) return "刚刚"
+  if (ageSec < 60) return `${ageSec} 秒前`
+  const ageMin = Math.floor(ageSec / 60)
+  if (ageMin < 60) return `${ageMin} 分钟前`
+  return formatDateTime(updatedAt)
+}
+
+function syncActionButtons(snapshot: BridgeRuntimeSnapshot): void {
+  const enabled = snapshot.config.enabled
+  const connected = Boolean(enabled && snapshot.status.clientId && !snapshot.status.lastError)
+  const retrying = Boolean(enabled && snapshot.status.lastError)
+
+  ui.enableButton.classList.remove("action-primary", "action-secondary")
+  ui.disableButton.classList.remove("action-primary", "action-secondary", "action-danger")
+
+  if (!enabled) {
+    ui.enableButton.textContent = "开启桥接"
+    ui.enableButton.classList.add("action-primary")
+    ui.disableButton.textContent = "关闭桥接"
+    ui.disableButton.classList.add("action-secondary")
+    ui.disableButton.disabled = true
+    return
+  }
+
+  ui.enableButton.textContent = retrying ? "重试连接" : "重新连接"
+  ui.enableButton.classList.add("action-secondary")
+  ui.disableButton.textContent = "关闭桥接"
+  ui.disableButton.classList.add(connected || retrying ? "action-danger" : "action-primary")
+  ui.disableButton.disabled = busy
 }
 
 function normalizePortInput(value: string): number | null {
@@ -96,6 +130,10 @@ function setBusy(nextBusy: boolean): void {
   ui.enableButton.disabled = nextBusy
   ui.disableButton.disabled = nextBusy
   ui.portInput.disabled = nextBusy
+  ui.copyUrlButton.disabled = nextBusy
+  if (currentSnapshot) {
+    syncActionButtons(currentSnapshot)
+  }
 }
 
 function setHistoryButtonsBusy(nextBusy: boolean): void {
@@ -124,43 +162,74 @@ function syncPortInputValue(snapshotPort: number): void {
   }
 }
 
+function renderClientRegistration(clientIdValue?: string): void {
+  if (!clientIdValue) {
+    clientIdExpanded = false
+    ui.clientSummary.textContent = "未注册"
+    ui.clientId.textContent = ""
+    ui.clientId.hidden = true
+    ui.clientIdToggle.hidden = true
+    return
+  }
+
+  ui.clientSummary.textContent = "本机已注册"
+  ui.clientId.textContent = clientIdValue
+  ui.clientIdToggle.hidden = false
+  ui.clientId.hidden = !clientIdExpanded
+  ui.clientIdToggle.textContent = clientIdExpanded ? "收起 Client ID" : "查看 Client ID"
+}
+
 function renderSnapshot(snapshot: BridgeRuntimeSnapshot): void {
   currentSnapshot = snapshot
   syncPortInputValue(snapshot.config.port)
   ui.backendUrl.textContent = snapshot.status.backendUrl
-  ui.clientId.textContent = snapshot.status.clientId || "未注册"
+  renderClientRegistration(snapshot.status.clientId)
+  syncActionButtons(snapshot)
 
   if (!snapshot.config.enabled) {
     ui.statusPill.textContent = "已关闭"
     ui.statusPill.dataset.tone = "paused"
-    setMessage("桥接服务已关闭。修改端口后点击开启即可自动拉起对应端口的本地服务。")
+    setMessage("桥接已关闭。改端口后点开启即可。")
   } else if (snapshot.status.lastError) {
     ui.statusPill.textContent = "重试中"
     ui.statusPill.dataset.tone = "error"
-    setMessage(`桥接连接失败：${snapshot.status.lastError}`, "error")
+    setMessage(`连接失败：${snapshot.status.lastError}`, "error")
   } else if (snapshot.status.clientId) {
     ui.statusPill.textContent = "已连接"
     ui.statusPill.dataset.tone = "active"
-    setMessage("桥接服务已开启，本地宿主已拉起对应端口的 bridge server。", "success")
+    setMessage(`已连接 · 端口 ${snapshot.config.port}`, "success")
   } else if (snapshot.status.running) {
     ui.statusPill.textContent = "启动中"
     ui.statusPill.dataset.tone = "paused"
-    setMessage("桥接服务已开启，正在等待本地 bridge server 完成注册。")
+    setMessage("已开启，正在等待本机注册…")
   } else {
     ui.statusPill.textContent = "待命中"
     ui.statusPill.dataset.tone = "paused"
-    setMessage("当前配置已保存，但桥接轮询还未进入运行态。")
+    setMessage("配置已保存，轮询尚未运行。")
   }
 
-  const leaseText = snapshot.status.leaseExpiresAt
-    ? `租约到期 ${formatTime(snapshot.status.leaseExpiresAt)}`
-    : "尚未建立租约"
-
-  ui.statusMeta.textContent = [
-    `状态刷新 ${formatTime(snapshot.status.updatedAt)}`,
-    `失败次数 ${snapshot.status.failureCount}`,
-    leaseText,
-  ].join("  ·  ")
+  const parts = [`心跳 ${formatHeartbeatAge(snapshot.status.updatedAt)}`]
+  if (snapshot.status.failureCount > 0) {
+    parts.push(`失败 ${snapshot.status.failureCount}`)
+  }
+  if (snapshot.status.clientId && snapshot.status.leaseExpiresAt) {
+    const leaseLeftSec = Math.max(
+      0,
+      Math.floor((snapshot.status.leaseExpiresAt - Date.now()) / 1000),
+    )
+    if (leaseLeftSec <= 30) {
+      parts.push(`租约 ${leaseLeftSec}s`)
+    }
+  }
+  ui.statusMeta.textContent = parts.join("  ·  ")
+  ui.statusMeta.title = [
+    `backend ${snapshot.status.backendUrl}`,
+    snapshot.status.clientId ? `client ${snapshot.status.clientId}` : null,
+    snapshot.status.leaseExpiresAt
+      ? `lease ${formatDateTime(snapshot.status.leaseExpiresAt)}`
+      : null,
+    `failures ${snapshot.status.failureCount}`,
+  ].filter(Boolean).join("\n")
 }
 
 async function copyText(content: string): Promise<boolean> {
@@ -385,9 +454,7 @@ async function applyConfig(enabled: boolean): Promise<void> {
 
     portDraftDirty = false
     setMessage(
-      enabled
-        ? `桥接服务已开启，本地宿主正在拉起端口 ${port} 的 bridge server。`
-        : `桥接服务已关闭，端口已保留为 ${port}。`,
+      enabled ? `正在连接端口 ${port}…` : `已关闭 · 端口保留 ${port}`,
       "success",
     )
   } catch (error) {
@@ -403,6 +470,23 @@ ui.enableButton.addEventListener("click", () => {
 
 ui.disableButton.addEventListener("click", () => {
   void applyConfig(false)
+})
+
+ui.copyUrlButton.addEventListener("click", () => {
+  void (async () => {
+    const url = ui.backendUrl.textContent?.trim() || ""
+    if (!url) {
+      setMessage("暂无服务地址可复制。", "error")
+      return
+    }
+    const ok = await copyText(url)
+    setMessage(ok ? "已复制服务地址。" : "复制失败，请检查剪贴板权限。", ok ? "success" : "error")
+  })()
+})
+
+ui.clientIdToggle.addEventListener("click", () => {
+  clientIdExpanded = !clientIdExpanded
+  renderClientRegistration(currentSnapshot?.status.clientId)
 })
 
 ui.portInput.addEventListener("input", () => {

@@ -20,8 +20,8 @@
       </section>
 
       <section class="tabs">
-        <button class="tab-button" id="tabControlButton" data-active="true">控制台</button>
-        <button class="tab-button" id="tabHistoryButton" data-active="false">历史记录</button>
+        <button class="tab-button" id="tabControlButton" data-active="true" type="button">控制台</button>
+        <button class="tab-button" id="tabHistoryButton" data-active="false" type="button">调用记录</button>
       </section>
 
       <div class="tab-panel" id="controlTabPanel">
@@ -34,40 +34,48 @@
             <span class="field-prefix">localhost:</span>
             <input id="portInput" type="number" min="1" max="65535" inputmode="numeric" />
           </div>
-          <p class="hint">修改端口后点击开启，插件会通过本地宿主自动拉起对应端口的 bridge server。</p>
+          <p class="hint" id="portHint">修改端口后点开启，本地宿主会自动拉起对应 bridge server。</p>
 
-          <div class="meta-grid">
-            <article class="meta-card">
-              <span class="meta-label">目标地址</span>
-              <strong id="backendUrl">http://localhost:3054</strong>
-            </article>
-            <article class="meta-card">
-              <span class="meta-label">在线 Client</span>
-              <strong id="clientId">未注册</strong>
-            </article>
+          <div class="connection-summary">
+            <div class="connection-block">
+              <span class="meta-label">服务地址</span>
+              <div class="url-row">
+                <strong id="backendUrl">http://localhost:3054</strong>
+                <button class="action action-ghost action-tiny" id="copyUrlButton" type="button">复制</button>
+              </div>
+            </div>
+            <div class="connection-block">
+              <span class="meta-label">本机注册</span>
+              <strong id="clientSummary">未注册</strong>
+              <button class="client-id-toggle" id="clientIdToggle" type="button" hidden>
+                查看 Client ID
+              </button>
+              <code class="client-id-value" id="clientId" hidden></code>
+            </div>
           </div>
         </section>
 
         <section class="feedback">
-          <div class="message" id="message">输入端口后点击开启，插件会自动拉起并连接对应端口的本地 bridge 服务。</div>
+          <div class="message" id="message">输入端口后点击开启即可连接。</div>
           <div class="status-meta" id="statusMeta">状态加载中...</div>
         </section>
 
         <section class="actions">
-          <button class="action action-primary" id="enableButton">开启桥接</button>
-          <button class="action action-secondary" id="disableButton">关闭桥接</button>
+          <button class="action action-primary" id="enableButton" type="button">开启桥接</button>
+          <button class="action action-secondary" id="disableButton" type="button">关闭桥接</button>
         </section>
       </div>
 
       <div class="tab-panel tab-panel-hidden" id="historyTabPanel">
+        <p class="history-intro">Agent 经 Bridge 调用后的记录，便于复制 curl 复现。</p>
         <section class="history-actions">
-          <button class="action action-ghost" id="refreshHistoryButton">刷新</button>
-          <button class="action action-ghost" id="copyAllCurlButton">复制全部 curl</button>
-          <button class="action action-ghost" id="clearHistoryButton">清空历史</button>
+          <button class="action action-ghost" id="refreshHistoryButton" type="button">刷新</button>
+          <button class="action action-ghost" id="copyAllCurlButton" type="button">复制全部 curl</button>
+          <button class="action action-ghost" id="clearHistoryButton" type="button">清空</button>
         </section>
 
         <section class="history-shell">
-          <div class="history-empty" id="historyEmpty">暂无执行历史，等 AI 通过 bridge 调用后会自动记录。</div>
+          <div class="history-empty" id="historyEmpty">暂无调用记录。</div>
           <div class="history-list" id="historyList"></div>
         </section>
       </div>
