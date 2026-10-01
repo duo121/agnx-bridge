@@ -30,7 +30,7 @@ HTTP API：**`/api/agnx-bridge/*`** · 默认端口：**`3054`** · extensionId�
 1. 从 GitHub **[Releases](https://github.com/duo121/agnx-bridge/releases)** 下载 `agnx-bridge-chrome-mv3.zip`，解压得到 `chrome-mv3/`  
    （若还没有 Release，用下方「从源码安装」先 `pnpm build`。）
 2. Chrome → `chrome://extensions` → 开发者模式 → **加载已解压的扩展程序** → 选 `chrome-mv3/`
-3. 一行命令安装本机宿主 + Skill：
+3. 安装本机宿主 + Skill：
 
 ```bash
 # macOS / Linux
@@ -58,16 +58,6 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 应看到 `clients.online >= 1`。
 
-冒烟（可选）：经 Bridge 开一个百度标签，确认扩展真在干活：
-
-```bash
-curl -sS http://localhost:3054/api/agnx-bridge/exec \
-  -H 'Content-Type: application/json' \
-  -d '{"waitMs":30000,"command":{"kind":"browser-agent","method":"tabs.create","args":[{"url":"https://www.baidu.com/","active":true}]}}'
-```
-
-返回里应有新建标签的 `id`；Chrome 前台会出现百度页。
-
 ---
 
 ## 快速开始（从源码）
@@ -80,7 +70,7 @@ cd agnx-bridge
 pnpm install
 pnpm build                 # 产出 .output/chrome-mv3/
 ./scripts/install.sh       # macOS / Linux：native-host + Skill
-# Windows PowerShell：
+# Windows：
 #   powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
@@ -94,9 +84,8 @@ pnpm native-host:install
 AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh
 ```
 
-Windows 只装宿主：
-
 ```powershell
+# Windows 只装宿主
 $env:AGNX_BRIDGE_SKIP_SKILL = "1"
 powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
@@ -133,7 +122,6 @@ Agent 入口：
 | 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前 Load unpacked） |
 | 会话式 console 采集 | 无 Node 的纯 zip 安装 |
 | 复用真实登录态与日常标签 | — |
-| macOS / Windows / Linux native-host 安装 | — |
 
 ---
 
@@ -170,7 +158,7 @@ pnpm typecheck
 pnpm build
 pnpm zip
 pnpm crx
-./scripts/install.sh          # macOS / Linux
+./scripts/install.sh
 # Windows: powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
@@ -182,16 +170,7 @@ NATIVE_HOST_BROWSER=brave pnpm native-host:install
 NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 ```
 
-日志：
-
-- macOS：`~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
-- macOS：`~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
-- Windows：`%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\native-host.log`
-- Windows：`%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\bridge-server.stderr.log`
-
-Windows 注册表（由 `install.ps1` / `native-host:install` 写入）：
-
-`HKCU\Software\Google\Chrome\NativeMessagingHosts\com.agnx.bridge`
+日志目录在运行时根下的 `.output/`（见上表「本机运行时目录」），常见文件：`native-host.log`、`bridge-server.stderr.log`。
 
 打 `v*` tag 可走 GitHub Actions 发 Release（`agnx-bridge-chrome-mv3.zip`）。
 

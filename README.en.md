@@ -30,7 +30,7 @@ HTTP API: **`/api/agnx-bridge/*`** · Default port: **`3054`** · extensionId: `
 1. Download `agnx-bridge-chrome-mv3.zip` from **[Releases](https://github.com/duo121/agnx-bridge/releases)** and unzip to get `chrome-mv3/`  
    (If there is no release yet, use “From source” below and `pnpm build`.)
 2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → select `chrome-mv3/`
-3. Install the local native host + Skill in one command:
+3. Install the local native host + Skill:
 
 ```bash
 # macOS / Linux
@@ -58,16 +58,6 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 Expect `clients.online >= 1`.
 
-Optional smoke test — open Baidu through the bridge:
-
-```bash
-curl -sS http://localhost:3054/api/agnx-bridge/exec \
-  -H 'Content-Type: application/json' \
-  -d '{"waitMs":30000,"command":{"kind":"browser-agent","method":"tabs.create","args":[{"url":"https://www.baidu.com/","active":true}]}}'
-```
-
-The response should include a new tab `id`; Baidu should appear in the foreground Chrome window.
-
 ---
 
 ## From source
@@ -80,7 +70,7 @@ cd agnx-bridge
 pnpm install
 pnpm build                 # writes .output/chrome-mv3/
 ./scripts/install.sh       # macOS / Linux: native-host + Skill
-# Windows PowerShell:
+# Windows:
 #   powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
@@ -94,9 +84,8 @@ pnpm native-host:install
 AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh
 ```
 
-Windows host-only:
-
 ```powershell
+# Windows host-only
 $env:AGNX_BRIDGE_SKIP_SKILL = "1"
 powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
@@ -133,7 +122,6 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 | Arbitrary in-page JS (`page-agent`) | One-click Chrome Web Store install (Load unpacked today) |
 | Session console capture | Node-free zip-only install |
 | Real login state + everyday tabs | — |
-| macOS / Windows / Linux native-host install | — |
 
 ---
 
@@ -170,7 +158,7 @@ pnpm typecheck
 pnpm build
 pnpm zip
 pnpm crx
-./scripts/install.sh          # macOS / Linux
+./scripts/install.sh
 # Windows: powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
@@ -182,16 +170,7 @@ NATIVE_HOST_BROWSER=brave pnpm native-host:install
 NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 ```
 
-Logs:
-
-- macOS: `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
-- macOS: `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
-- Windows: `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\native-host.log`
-- Windows: `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\bridge-server.stderr.log`
-
-Windows registry key (written by `install.ps1` / `native-host:install`):
-
-`HKCU\Software\Google\Chrome\NativeMessagingHosts\com.agnx.bridge`
+Logs live under `.output/` inside the runtime directory above (`native-host.log`, `bridge-server.stderr.log`).
 
 Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome-mv3.zip`).
 
