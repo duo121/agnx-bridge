@@ -33,10 +33,16 @@ HTTP API：**`/api/agnx-bridge/*`** · 默认端口：**`3054`** · extensionId�
 3. 一行命令安装本机宿主 + Skill：
 
 ```bash
+# macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/duo121/agnx-bridge/main/scripts/install.sh | bash
 
 # 或已克隆本仓库时
 ./scripts/install.sh
+```
+
+```powershell
+# Windows（已克隆仓库）
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 4. 点工具栏 **AGNX Bridge** 图标（不要当网页打开 popup）→ 确认端口 **3054** → **开启桥接**  
@@ -56,14 +62,16 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 ## 快速开始（从源码）
 
-前置：Node ≥ 18、pnpm ≥ 9、Google Chrome（macOS 优先；Edge / Brave / Chromium 见下文）。
+前置：Node ≥ 18、pnpm ≥ 9、Google Chrome（macOS / Windows / Linux；Edge / Brave / Chromium 见下文）。
 
 ```bash
 git clone https://github.com/duo121/agnx-bridge.git
 cd agnx-bridge
 pnpm install
 pnpm build                 # 产出 .output/chrome-mv3/
-./scripts/install.sh       # native-host + Skill
+./scripts/install.sh       # macOS / Linux：native-host + Skill
+# Windows PowerShell：
+#   powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 然后加载 `.output/chrome-mv3/`，popup **开启桥接**，再跑上面的 `health`。
@@ -74,6 +82,13 @@ pnpm build                 # 产出 .output/chrome-mv3/
 ./scripts/install-skill.sh
 pnpm native-host:install
 AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh
+```
+
+Windows 只装宿主：
+
+```powershell
+$env:AGNX_BRIDGE_SKIP_SKILL = "1"
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 也可用：
@@ -107,7 +122,7 @@ Agent 入口：
 | 动态 `chrome.*` / CDP（`browser-agent`） | 一等公民「可交互元素列表 / AX observe / ref」 |
 | 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前 Load unpacked） |
 | 会话式 console 采集 | 无 Node 的纯 zip 安装 |
-| 复用真实登录态与日常标签 | Windows native-host（当前以 macOS 为主） |
+| 复用真实登录态与日常标签 | — |
 
 ---
 
@@ -119,7 +134,8 @@ Agent 入口：
 | `server/` | 本机 bridge HTTP server |
 | `native-host/` | Native Messaging 宿主 |
 | `skills/agnx-bridge/` | Agent Skill |
-| `scripts/install.sh` | 一键：native-host + Skill |
+| `scripts/install.sh` | macOS / Linux 一键：native-host + Skill |
+| `scripts/install.ps1` | Windows 一键：native-host + Skill |
 | `keys/extension-private-key.pem` | 稳定 extensionId（开源发行为固定 ID 所需） |
 | `.output/chrome-mv3/` | `pnpm build` 后的可加载扩展目录 |
 
@@ -128,7 +144,8 @@ Agent 入口：
 | 产品名 | **AGNX Bridge** |
 | extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp` |
 | Native Messaging | `com.agnx.bridge` |
-| 本机运行时目录 | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| 本机运行时目录（macOS） | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| 本机运行时目录（Windows） | `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\` |
 | HTTP API | `/api/agnx-bridge/*` |
 | 默认端口 | `3054` |
 
@@ -165,8 +182,7 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 ## 开源缺口
 
 1. Chrome Web Store 上架（当前 Load unpacked）
-2. Windows native-host
-3. 可选：可交互元素快照
+2. 可选：可交互元素快照
 
 ---
 

@@ -33,10 +33,16 @@ HTTP API: **`/api/agnx-bridge/*`** · Default port: **`3054`** · extensionId: `
 3. Install the local native host + Skill in one command:
 
 ```bash
+# macOS / Linux
 curl -fsSL https://raw.githubusercontent.com/duo121/agnx-bridge/main/scripts/install.sh | bash
 
 # Or from a local clone
 ./scripts/install.sh
+```
+
+```powershell
+# Windows (from a local clone)
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 4. Click the toolbar **AGNX Bridge** icon (do not open `popup.html` as a normal tab) → confirm port **3054** → **Enable bridge**  
@@ -56,14 +62,16 @@ Expect `clients.online >= 1`.
 
 ## From source
 
-Requires Node ≥ 18, pnpm ≥ 9, Google Chrome (macOS first; Edge / Brave / Chromium below).
+Requires Node ≥ 18, pnpm ≥ 9, Google Chrome (macOS / Windows / Linux; Edge / Brave / Chromium below).
 
 ```bash
 git clone https://github.com/duo121/agnx-bridge.git
 cd agnx-bridge
 pnpm install
 pnpm build                 # writes .output/chrome-mv3/
-./scripts/install.sh       # native-host + Skill
+./scripts/install.sh       # macOS / Linux: native-host + Skill
+# Windows PowerShell:
+#   powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 Load `.output/chrome-mv3/`, **Enable bridge** in the popup, then run the health check above.
@@ -74,6 +82,13 @@ Load `.output/chrome-mv3/`, **Enable bridge** in the popup, then run the health 
 ./scripts/install-skill.sh
 pnpm native-host:install
 AGNX_BRIDGE_SKIP_SKILL=1 ./scripts/install.sh
+```
+
+Windows host-only:
+
+```powershell
+$env:AGNX_BRIDGE_SKIP_SKILL = "1"
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 Or:
@@ -107,7 +122,7 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 | Dynamic `chrome.*` / CDP (`browser-agent`) | First-class interactive element / AX observe / ref lists |
 | Arbitrary in-page JS (`page-agent`) | One-click Chrome Web Store install (Load unpacked today) |
 | Session console capture | Node-free zip-only install |
-| Real login state + everyday tabs | Windows native-host (macOS-first) |
+| Real login state + everyday tabs | — |
 
 ---
 
@@ -119,7 +134,8 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 | `server/` | Local bridge HTTP server |
 | `native-host/` | Native Messaging host |
 | `skills/agnx-bridge/` | Agent Skill |
-| `scripts/install.sh` | One-shot: native-host + Skill |
+| `scripts/install.sh` | macOS / Linux one-shot: native-host + Skill |
+| `scripts/install.ps1` | Windows one-shot: native-host + Skill |
 | `keys/extension-private-key.pem` | Stable extensionId (required for fixed ID distribution) |
 | `.output/chrome-mv3/` | Loadable extension after `pnpm build` |
 
@@ -129,6 +145,7 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 | extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp` |
 | Native Messaging | `com.agnx.bridge` |
 | Runtime dir (macOS) | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| Runtime dir (Windows) | `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\` |
 | HTTP API | `/api/agnx-bridge/*` |
 | Default port | `3054` |
 
@@ -165,8 +182,7 @@ Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome
 ## Open gaps
 
 1. Chrome Web Store listing (Load unpacked for now)
-2. Windows native-host
-3. Optional interactive-element snapshot API
+2. Optional interactive-element snapshot API
 
 ---
 

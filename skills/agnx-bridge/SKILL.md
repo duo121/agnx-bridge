@@ -58,7 +58,8 @@ curl -sS "$BASE/health"
 | 扩展清单名 | `AGNX Bridge` |
 | 构建产物 | 仓库内 `.output/chrome-mv3/`（或 GitHub Releases 的 zip） |
 | extensionId | `eppdcemdgahndmmnnfhmgpcagpjiclcp`（由仓库 `keys/extension-private-key.pem` 派生） |
-| 运行时根 | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| 运行时根（macOS） | `~/Library/Application Support/AGNX/agnx-bridge-native-host/` |
+| 运行时根（Windows） | `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\` |
 | Native host | `com.agnx.bridge` |
 | Skill 安装位置 | `~/.cursor/skills/agnx-bridge/` · `~/.claude/skills/agnx-bridge/` · `~/.codex/skills/agnx-bridge/` |
 

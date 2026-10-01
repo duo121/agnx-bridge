@@ -157,6 +157,7 @@ export async function ensureServer(portInput) {
   const child = spawn(process.execPath, [serverEntry], {
     cwd: projectRoot,
     detached: true,
+    windowsHide: true,
     stdio: [
       "ignore",
       openSync(serverStdoutLogFile, "a"),
