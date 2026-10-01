@@ -2,9 +2,7 @@
 
 [English](./README.en.md) · [MIT License](./LICENSE)
 
-<!-- Cover: 推送前可替换为 docs/assets/cover.png
-![AGNX Bridge](./docs/assets/cover.png)
--->
+![AGNX Bridge](./docs/assets/cover.jpg)
 
 把你**日常已登录的 Chrome** 变成 AI 的本地浏览器运行时。  
 **浏览器扩展 + Agent Skill** 一套交付：扩展执行，Skill 教 Claude / Codex / Cursor 怎么调。
@@ -166,10 +164,9 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 
 ## 开源缺口
 
-1. README 封面图（`docs/assets/cover.png`，待补）
-2. Chrome Web Store 上架（当前 Load unpacked）
-3. Windows native-host
-4. 可选：可交互元素快照
+1. Chrome Web Store 上架（当前 Load unpacked）
+2. Windows native-host
+3. 可选：可交互元素快照
 
 ---
 

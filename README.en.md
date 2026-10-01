@@ -2,9 +2,7 @@
 
 [中文](./README.md) · [MIT License](./LICENSE)
 
-<!-- Cover: replace with docs/assets/cover.png before / after first release
-![AGNX Bridge](./docs/assets/cover.png)
--->
+![AGNX Bridge](./docs/assets/cover.jpg)
 
 Turn your **everyday, already-signed-in Chrome** into a local browser runtime for AI agents.  
 One package: a **Chrome extension** that executes work, plus an **Agent Skill** that teaches Claude / Codex / Cursor how to call it.
@@ -166,10 +164,9 @@ Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome
 
 ## Open gaps
 
-1. README cover image (`docs/assets/cover.png`, pending)
-2. Chrome Web Store listing (Load unpacked for now)
-3. Windows native-host
-4. Optional interactive-element snapshot API
+1. Chrome Web Store listing (Load unpacked for now)
+2. Windows native-host
+3. Optional interactive-element snapshot API
 
 ---
 
