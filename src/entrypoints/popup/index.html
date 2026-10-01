@@ -28,17 +28,18 @@
           <section class="card">
             <div class="label-row">
               <label for="portInput">桥接端口</label>
-              <span class="label-badge">localhost</span>
+              <span class="label-badge">仅数字</span>
             </div>
             <div class="field-shell">
-              <span class="field-prefix">localhost:</span>
               <input id="portInput" type="number" min="1" max="65535" inputmode="numeric" />
+              <button class="action action-ghost action-tiny" id="copyUrlButton" type="button" title="复制 http://localhost:端口">
+                复制地址
+              </button>
             </div>
-            <div class="url-row url-row-under-port">
-              <span class="meta-label">完整地址</span>
-              <strong id="backendUrl">http://localhost:3054</strong>
-              <button class="action action-ghost action-tiny" id="copyUrlButton" type="button">复制</button>
-            </div>
+            <p class="address-hint">
+              Agent / curl 使用
+              <code id="backendUrl">http://localhost:3054</code>
+            </p>
 
             <div class="registration-row">
               <div class="registration-main">
