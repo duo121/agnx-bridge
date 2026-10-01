@@ -14,8 +14,9 @@ const clientId = document.querySelector<HTMLElement>("#clientId")
 const clientIdToggle = document.querySelector<HTMLButtonElement>("#clientIdToggle")
 const copyUrlButton = document.querySelector<HTMLButtonElement>("#copyUrlButton")
 const statusPill = document.querySelector<HTMLElement>("#statusPill")
-const message = document.querySelector<HTMLElement>("#message")
-const statusMeta = document.querySelector<HTMLElement>("#statusMeta")
+const statusSub = document.querySelector<HTMLElement>("#statusSub")
+const statusCluster = document.querySelector<HTMLElement>("#statusCluster")
+const alertLine = document.querySelector<HTMLElement>("#alertLine")
 const enableButton = document.querySelector<HTMLButtonElement>("#enableButton")
 const disableButton = document.querySelector<HTMLButtonElement>("#disableButton")
 const tabControlButton = document.querySelector<HTMLButtonElement>("#tabControlButton")
@@ -37,10 +38,12 @@ let currentSnapshot: BridgeRuntimeSnapshot | null = null
 let currentHistory: BridgeCommandHistoryEntry[] = []
 let historyLoading = false
 let lastHistoryRefreshAt = 0
+let alertClearTimer: number | null = null
 
 const SNAPSHOT_REFRESH_MS = 1500
 const HISTORY_REFRESH_MS = 3000
 const HISTORY_LIMIT = 80
+const FLASH_ALERT_MS = 2200
 
 function requireElement<T extends HTMLElement>(element: T | null, id: string): T {
   if (!element) {
@@ -57,8 +60,9 @@ const ui = {
   clientIdToggle: requireElement(clientIdToggle, "clientIdToggle"),
   copyUrlButton: requireElement(copyUrlButton, "copyUrlButton"),
   statusPill: requireElement(statusPill, "statusPill"),
-  message: requireElement(message, "message"),
-  statusMeta: requireElement(statusMeta, "statusMeta"),
+  statusSub: requireElement(statusSub, "statusSub"),
+  statusCluster: requireElement(statusCluster, "statusCluster"),
+  alertLine: requireElement(alertLine, "alertLine"),
   enableButton: requireElement(enableButton, "enableButton"),
   disableButton: requireElement(disableButton, "disableButton"),
   tabControlButton: requireElement(tabControlButton, "tabControlButton"),
@@ -143,13 +147,45 @@ function setHistoryButtonsBusy(nextBusy: boolean): void {
   ui.copyAllCurlButton.disabled = nextBusy
 }
 
-function setMessage(text: string, tone: "default" | "success" | "error" = "default"): void {
-  ui.message.textContent = text
-  if (tone === "default") {
-    ui.message.removeAttribute("data-tone")
+function clearAlertTimer(): void {
+  if (alertClearTimer !== null) {
+    window.clearTimeout(alertClearTimer)
+    alertClearTimer = null
+  }
+}
+
+function setAlert(
+  text: string,
+  tone: "default" | "success" | "error" = "default",
+  options?: { sticky?: boolean },
+): void {
+  clearAlertTimer()
+  const trimmed = text.trim()
+  if (!trimmed) {
+    ui.alertLine.hidden = true
+    ui.alertLine.textContent = ""
+    ui.alertLine.removeAttribute("data-tone")
     return
   }
-  ui.message.dataset.tone = tone
+
+  ui.alertLine.hidden = false
+  ui.alertLine.textContent = trimmed
+  if (tone === "default") {
+    ui.alertLine.removeAttribute("data-tone")
+  } else {
+    ui.alertLine.dataset.tone = tone
+  }
+
+  if (!options?.sticky && tone !== "error") {
+    alertClearTimer = window.setTimeout(() => {
+      if (ui.alertLine.dataset.tone === "error") return
+      setAlert("")
+    }, FLASH_ALERT_MS)
+  }
+}
+
+function setMessage(text: string, tone: "default" | "success" | "error" = "default"): void {
+  setAlert(text, tone, { sticky: tone === "error" })
 }
 
 function syncPortInputValue(snapshotPort: number): void {
@@ -179,34 +215,8 @@ function renderClientRegistration(clientIdValue?: string): void {
   ui.clientIdToggle.textContent = clientIdExpanded ? "收起 Client ID" : "查看 Client ID"
 }
 
-function renderSnapshot(snapshot: BridgeRuntimeSnapshot): void {
-  currentSnapshot = snapshot
-  syncPortInputValue(snapshot.config.port)
-  ui.backendUrl.textContent = snapshot.status.backendUrl
-  renderClientRegistration(snapshot.status.clientId)
-  syncActionButtons(snapshot)
-
-  if (!snapshot.config.enabled) {
-    ui.statusPill.textContent = "已关闭"
-    ui.statusPill.dataset.tone = "paused"
-    setMessage("桥接已关闭。改端口后点开启即可。")
-  } else if (snapshot.status.lastError) {
-    ui.statusPill.textContent = "重试中"
-    ui.statusPill.dataset.tone = "error"
-    setMessage(`连接失败：${snapshot.status.lastError}`, "error")
-  } else if (snapshot.status.clientId) {
-    ui.statusPill.textContent = "已连接"
-    ui.statusPill.dataset.tone = "active"
-    setMessage(`已连接 · 端口 ${snapshot.config.port}`, "success")
-  } else if (snapshot.status.running) {
-    ui.statusPill.textContent = "启动中"
-    ui.statusPill.dataset.tone = "paused"
-    setMessage("已开启，正在等待本机注册…")
-  } else {
-    ui.statusPill.textContent = "待命中"
-    ui.statusPill.dataset.tone = "paused"
-    setMessage("配置已保存，轮询尚未运行。")
-  }
+function buildStatusSub(snapshot: BridgeRuntimeSnapshot, fallback: string): string {
+  if (!snapshot.config.enabled) return fallback
 
   const parts = [`心跳 ${formatHeartbeatAge(snapshot.status.updatedAt)}`]
   if (snapshot.status.failureCount > 0) {
@@ -221,14 +231,53 @@ function renderSnapshot(snapshot: BridgeRuntimeSnapshot): void {
       parts.push(`租约 ${leaseLeftSec}s`)
     }
   }
-  ui.statusMeta.textContent = parts.join("  ·  ")
-  ui.statusMeta.title = [
+  return parts.join(" · ")
+}
+
+function renderSnapshot(snapshot: BridgeRuntimeSnapshot): void {
+  currentSnapshot = snapshot
+  syncPortInputValue(snapshot.config.port)
+  ui.backendUrl.textContent = snapshot.status.backendUrl
+  renderClientRegistration(snapshot.status.clientId)
+  syncActionButtons(snapshot)
+
+  const portLabel = String(snapshot.config.port)
+
+  if (!snapshot.config.enabled) {
+    ui.statusPill.textContent = "已关闭"
+    ui.statusPill.dataset.tone = "paused"
+    ui.statusSub.textContent = "改端口后点开启"
+    if (ui.alertLine.dataset.tone === "error") setAlert("")
+  } else if (snapshot.status.lastError) {
+    ui.statusPill.textContent = `重试中 · ${portLabel}`
+    ui.statusPill.dataset.tone = "error"
+    ui.statusSub.textContent = buildStatusSub(snapshot, "连接异常")
+    setAlert(`连接失败：${snapshot.status.lastError}`, "error", { sticky: true })
+  } else if (snapshot.status.clientId) {
+    ui.statusPill.textContent = `已连接 · ${portLabel}`
+    ui.statusPill.dataset.tone = "active"
+    ui.statusSub.textContent = buildStatusSub(snapshot, "连接正常")
+    if (ui.alertLine.dataset.tone === "error") setAlert("")
+  } else if (snapshot.status.running) {
+    ui.statusPill.textContent = `启动中 · ${portLabel}`
+    ui.statusPill.dataset.tone = "paused"
+    ui.statusSub.textContent = "等待本机注册…"
+    if (ui.alertLine.dataset.tone === "error") setAlert("")
+  } else {
+    ui.statusPill.textContent = `待命中 · ${portLabel}`
+    ui.statusPill.dataset.tone = "paused"
+    ui.statusSub.textContent = "轮询尚未运行"
+    if (ui.alertLine.dataset.tone === "error") setAlert("")
+  }
+
+  ui.statusCluster.title = [
     `backend ${snapshot.status.backendUrl}`,
     snapshot.status.clientId ? `client ${snapshot.status.clientId}` : null,
     snapshot.status.leaseExpiresAt
       ? `lease ${formatDateTime(snapshot.status.leaseExpiresAt)}`
       : null,
     `failures ${snapshot.status.failureCount}`,
+    `updated ${formatDateTime(snapshot.status.updatedAt)}`,
   ].filter(Boolean).join("\n")
 }
 

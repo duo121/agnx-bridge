@@ -61,7 +61,6 @@ input {
 
 .hero,
 .card,
-.feedback,
 .actions {
   position: relative;
   z-index: 1;
@@ -98,16 +97,33 @@ h1 {
   letter-spacing: 0.01em;
 }
 
-.status-pill {
+.status-cluster {
   flex-shrink: 0;
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  max-width: 160px;
+}
+
+.status-pill {
   padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
   font-size: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: center;
+}
+
+.status-sub {
+  margin: 0;
+  color: var(--muted);
+  font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.3;
+  text-align: right;
 }
 
 .status-pill[data-tone="active"] {
@@ -270,34 +286,20 @@ h1 {
   word-break: break-all;
 }
 
-.feedback {
-  margin-top: 8px;
-  padding: 8px 10px;
-  border: 1px dashed var(--line);
-  border-radius: 12px;
-  background: rgba(255, 247, 233, 0.03);
-}
-
-.message {
-  color: var(--text);
-  font-size: 12px;
+.alert-line {
+  margin: 0;
+  padding: 0 2px;
+  color: var(--muted);
+  font-size: 11px;
   line-height: 1.4;
 }
 
-.message[data-tone="error"] {
+.alert-line[data-tone="error"] {
   color: #ffd4ca;
 }
 
-.message[data-tone="success"] {
+.alert-line[data-tone="success"] {
   color: #d9ffe5;
-}
-
-.status-meta {
-  margin-top: 4px;
-  color: var(--muted);
-  font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 10px;
-  line-height: 1.4;
 }
 
 .tab-panel-control {

@@ -14,7 +14,10 @@
             <p class="eyebrow">LOCAL BRIDGE</p>
             <h1>AGNX Bridge</h1>
           </div>
-          <div class="status-pill" id="statusPill" data-tone="paused">已关闭</div>
+          <div class="status-cluster" id="statusCluster">
+            <div class="status-pill" id="statusPill" data-tone="paused">已关闭</div>
+            <p class="status-sub" id="statusSub">改端口后点开启</p>
+          </div>
         </div>
       </section>
 
@@ -53,10 +56,7 @@
             </div>
           </section>
 
-          <section class="feedback">
-            <div class="message" id="message">输入端口后点击开启即可连接。</div>
-            <div class="status-meta" id="statusMeta">状态加载中...</div>
-          </section>
+          <p class="alert-line" id="alertLine" hidden></p>
         </div>
 
         <section class="actions actions-dock">
