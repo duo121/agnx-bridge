@@ -4,6 +4,7 @@ node_modules
 .env
 .keys
 .DS_Store
+.winduo-e2e
 test-cases/results
 *.log
 dist-release
