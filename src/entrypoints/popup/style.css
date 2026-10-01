@@ -22,8 +22,9 @@
 html,
 body {
   margin: 0;
-  min-width: 380px;
-  min-height: 360px;
+  width: 360px;
+  max-height: 520px;
+  overflow: hidden;
   background:
     radial-gradient(circle at top right, rgba(245, 157, 57, 0.18), transparent 42%),
     linear-gradient(180deg, #181513 0%, #0f0d0c 100%);
@@ -50,7 +51,12 @@ input {
 
 .panel {
   position: relative;
-  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  max-height: 520px;
+  overflow: hidden;
 }
 
 .hero,
@@ -62,53 +68,45 @@ input {
 }
 
 .hero {
-  margin-bottom: 14px;
-  padding: 16px 16px 14px;
+  margin: 0;
+  padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 14px;
   background: linear-gradient(180deg, rgba(255, 247, 233, 0.08), rgba(255, 247, 233, 0.03));
-  box-shadow: var(--shadow);
+  box-shadow: none;
 }
 
 .eyebrow {
-  margin: 0 0 10px;
+  margin: 0 0 4px;
   color: var(--muted);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.24em;
+  font-size: 10px;
+  letter-spacing: 0.18em;
 }
 
 .hero-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 10px;
 }
 
 h1 {
   margin: 0;
-  font-size: 28px;
-  line-height: 1;
+  font-size: 20px;
+  line-height: 1.1;
   letter-spacing: 0.01em;
-}
-
-.subtitle {
-  margin: 10px 0 0;
-  max-width: 240px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
 }
 
 .status-pill {
   flex-shrink: 0;
-  padding: 7px 12px;
+  padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-size: 10px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -131,9 +129,9 @@ h1 {
 }
 
 .card {
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 14px;
   background: var(--panel);
 }
 
@@ -142,25 +140,25 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .label-row label,
 .meta-label {
   color: var(--muted);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .label-badge {
-  padding: 4px 8px;
+  padding: 3px 7px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--panel-soft);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--muted);
 }
 
@@ -168,16 +166,16 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(255, 247, 233, 0.04);
 }
 
 .field-prefix {
   color: rgba(255, 247, 233, 0.64);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 #portInput {
@@ -187,7 +185,7 @@ h1 {
   background: transparent;
   color: var(--text);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
 }
 
@@ -196,18 +194,12 @@ h1 {
   margin: 0;
 }
 
-.hint {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 .connection-summary {
   display: grid;
-  gap: 12px;
-  margin-top: 14px;
-  padding-top: 14px;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
 }
 
@@ -217,14 +209,14 @@ h1 {
 
 .connection-block .meta-label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .connection-block > strong {
   display: block;
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
   word-break: break-all;
 }
 
@@ -279,17 +271,17 @@ h1 {
 }
 
 .feedback {
-  margin-top: 12px;
-  padding: 12px 14px;
+  margin-top: 8px;
+  padding: 8px 10px;
   border: 1px dashed var(--line);
-  border-radius: 16px;
+  border-radius: 12px;
   background: rgba(255, 247, 233, 0.03);
 }
 
 .message {
   color: var(--text);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .message[data-tone="error"] {
@@ -301,25 +293,46 @@ h1 {
 }
 
 .status-meta {
-  margin-top: 8px;
+  margin-top: 4px;
   color: var(--muted);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.tab-panel-control {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  gap: 8px;
+}
+
+.control-scroll {
+  min-height: 0;
+  overflow: auto;
 }
 
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.actions-dock {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  padding-top: 2px;
+  background: linear-gradient(180deg, transparent, rgba(15, 13, 12, 0.92) 28%);
 }
 
 .action {
   position: relative;
   overflow: hidden;
-  padding: 13px 14px;
-  border-radius: 14px;
+  padding: 11px 12px;
+  border-radius: 12px;
   border: 1px solid transparent;
   cursor: pointer;
   transition:
@@ -385,16 +398,17 @@ h1 {
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .tab-button {
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--line-strong);
   background: rgba(255, 247, 233, 0.04);
   color: var(--muted);
-  padding: 9px 10px;
+  padding: 7px 8px;
   cursor: pointer;
   transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
 }

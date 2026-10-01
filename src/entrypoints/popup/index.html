@@ -9,11 +9,10 @@
   <body>
     <main class="panel">
       <section class="hero">
-        <p class="eyebrow">LOCAL BRIDGE CONTROL</p>
         <div class="hero-row">
           <div>
+            <p class="eyebrow">LOCAL BRIDGE</p>
             <h1>AGNX Bridge</h1>
-            <p class="subtitle">用一个端口，接管本机浏览器自动化桥接。</p>
           </div>
           <div class="status-pill" id="statusPill" data-tone="paused">已关闭</div>
         </div>
@@ -24,43 +23,44 @@
         <button class="tab-button" id="tabHistoryButton" data-active="false" type="button">调用记录</button>
       </section>
 
-      <div class="tab-panel" id="controlTabPanel">
-        <section class="card">
-          <div class="label-row">
-            <label for="portInput">桥接端口</label>
-            <span class="label-badge">localhost</span>
-          </div>
-          <div class="field-shell">
-            <span class="field-prefix">localhost:</span>
-            <input id="portInput" type="number" min="1" max="65535" inputmode="numeric" />
-          </div>
-          <p class="hint" id="portHint">修改端口后点开启，本地宿主会自动拉起对应 bridge server。</p>
+      <div class="tab-panel tab-panel-control" id="controlTabPanel">
+        <div class="control-scroll">
+          <section class="card">
+            <div class="label-row">
+              <label for="portInput">桥接端口</label>
+              <span class="label-badge">localhost</span>
+            </div>
+            <div class="field-shell">
+              <span class="field-prefix">localhost:</span>
+              <input id="portInput" type="number" min="1" max="65535" inputmode="numeric" />
+            </div>
 
-          <div class="connection-summary">
-            <div class="connection-block">
-              <span class="meta-label">服务地址</span>
-              <div class="url-row">
-                <strong id="backendUrl">http://localhost:3054</strong>
-                <button class="action action-ghost action-tiny" id="copyUrlButton" type="button">复制</button>
+            <div class="connection-summary">
+              <div class="connection-block">
+                <span class="meta-label">服务地址</span>
+                <div class="url-row">
+                  <strong id="backendUrl">http://localhost:3054</strong>
+                  <button class="action action-ghost action-tiny" id="copyUrlButton" type="button">复制</button>
+                </div>
+              </div>
+              <div class="connection-block">
+                <span class="meta-label">本机注册</span>
+                <strong id="clientSummary">未注册</strong>
+                <button class="client-id-toggle" id="clientIdToggle" type="button" hidden>
+                  查看 Client ID
+                </button>
+                <code class="client-id-value" id="clientId" hidden></code>
               </div>
             </div>
-            <div class="connection-block">
-              <span class="meta-label">本机注册</span>
-              <strong id="clientSummary">未注册</strong>
-              <button class="client-id-toggle" id="clientIdToggle" type="button" hidden>
-                查看 Client ID
-              </button>
-              <code class="client-id-value" id="clientId" hidden></code>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="feedback">
-          <div class="message" id="message">输入端口后点击开启即可连接。</div>
-          <div class="status-meta" id="statusMeta">状态加载中...</div>
-        </section>
+          <section class="feedback">
+            <div class="message" id="message">输入端口后点击开启即可连接。</div>
+            <div class="status-meta" id="statusMeta">状态加载中...</div>
+          </section>
+        </div>
 
-        <section class="actions">
+        <section class="actions actions-dock">
           <button class="action action-primary" id="enableButton" type="button">开启桥接</button>
           <button class="action action-secondary" id="disableButton" type="button">关闭桥接</button>
         </section>
