@@ -1,11 +1,12 @@
 import type { BridgeRuntimeConfig } from "./types/bridge-control"
 
 export const BRIDGE_CONFIG_STORAGE_KEY = "agnx-bridge-config"
+
+/** 与文档 / Skill 默认端口一致（须在 DEFAULT_PORT 之前声明，避免打包后 TDZ） */
+export const AGNX_BRIDGE_DEFAULT_PORT = 3054
+
 const DEFAULT_ENABLED = (import.meta.env.VITE_AGNX_BRIDGE_ENABLED ?? "0") === "1"
 const DEFAULT_PORT = resolveDefaultPort()
-
-/** 与文档 / Skill 默认端口一致 */
-export const AGNX_BRIDGE_DEFAULT_PORT = 3054
 
 function resolveDefaultPort(): number {
   const fallback = AGNX_BRIDGE_DEFAULT_PORT
