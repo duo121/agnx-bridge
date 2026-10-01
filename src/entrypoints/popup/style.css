@@ -166,16 +166,10 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 8px 10px 8px 12px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: rgba(255, 247, 233, 0.04);
-}
-
-.field-prefix {
-  color: rgba(255, 247, 233, 0.64);
-  font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  font-size: 13px;
 }
 
 #portInput {
@@ -194,34 +188,18 @@ h1 {
   margin: 0;
 }
 
-
-
-
-
-.url-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
+.address-hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
-.url-row-under-port {
-  margin-top: 8px;
-}
-
-.url-row .meta-label {
-  flex-shrink: 0;
-  margin: 0;
-}
-
-.url-row strong {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
+.address-hint code {
+  margin-left: 4px;
+  color: rgba(255, 247, 233, 0.78);
   font-family: "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
   font-size: 11px;
-  line-height: 1.35;
-  color: var(--muted);
   word-break: break-all;
 }
 
@@ -230,6 +208,7 @@ h1 {
   padding: 5px 9px;
   font-size: 11px;
   border-radius: 10px;
+  white-space: nowrap;
 }
 
 .registration-row {
