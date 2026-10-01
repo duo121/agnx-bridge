@@ -58,6 +58,16 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 Expect `clients.online >= 1`.
 
+Optional smoke test — open Baidu through the bridge:
+
+```bash
+curl -sS http://localhost:3054/api/agnx-bridge/exec \
+  -H 'Content-Type: application/json' \
+  -d '{"waitMs":30000,"command":{"kind":"browser-agent","method":"tabs.create","args":[{"url":"https://www.baidu.com/","active":true}]}}'
+```
+
+The response should include a new tab `id`; Baidu should appear in the foreground Chrome window.
+
 ---
 
 ## From source
@@ -123,6 +133,7 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 | Arbitrary in-page JS (`page-agent`) | One-click Chrome Web Store install (Load unpacked today) |
 | Session console capture | Node-free zip-only install |
 | Real login state + everyday tabs | — |
+| macOS / Windows / Linux native-host install | — |
 
 ---
 
@@ -159,7 +170,8 @@ pnpm typecheck
 pnpm build
 pnpm zip
 pnpm crx
-./scripts/install.sh
+./scripts/install.sh          # macOS / Linux
+# Windows: powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 Other browsers:
@@ -172,8 +184,14 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 
 Logs:
 
-- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
-- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
+- macOS: `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
+- macOS: `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
+- Windows: `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\native-host.log`
+- Windows: `%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\bridge-server.stderr.log`
+
+Windows registry key (written by `install.ps1` / `native-host:install`):
+
+`HKCU\Software\Google\Chrome\NativeMessagingHosts\com.agnx.bridge`
 
 Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome-mv3.zip`).
 

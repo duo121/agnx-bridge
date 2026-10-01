@@ -58,6 +58,16 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 
 应看到 `clients.online >= 1`。
 
+冒烟（可选）：经 Bridge 开一个百度标签，确认扩展真在干活：
+
+```bash
+curl -sS http://localhost:3054/api/agnx-bridge/exec \
+  -H 'Content-Type: application/json' \
+  -d '{"waitMs":30000,"command":{"kind":"browser-agent","method":"tabs.create","args":[{"url":"https://www.baidu.com/","active":true}]}}'
+```
+
+返回里应有新建标签的 `id`；Chrome 前台会出现百度页。
+
 ---
 
 ## 快速开始（从源码）
@@ -123,6 +133,7 @@ Agent 入口：
 | 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前 Load unpacked） |
 | 会话式 console 采集 | 无 Node 的纯 zip 安装 |
 | 复用真实登录态与日常标签 | — |
+| macOS / Windows / Linux native-host 安装 | — |
 
 ---
 
@@ -159,7 +170,8 @@ pnpm typecheck
 pnpm build
 pnpm zip
 pnpm crx
-./scripts/install.sh
+./scripts/install.sh          # macOS / Linux
+# Windows: powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1
 ```
 
 其它浏览器宿主：
@@ -172,8 +184,14 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 
 日志：
 
-- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
-- `~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
+- macOS：`~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/native-host.log`
+- macOS：`~/Library/Application Support/AGNX/agnx-bridge-native-host/.output/bridge-server.stderr.log`
+- Windows：`%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\native-host.log`
+- Windows：`%LOCALAPPDATA%\AGNX\agnx-bridge-native-host\.output\bridge-server.stderr.log`
+
+Windows 注册表（由 `install.ps1` / `native-host:install` 写入）：
+
+`HKCU\Software\Google\Chrome\NativeMessagingHosts\com.agnx.bridge`
 
 打 `v*` tag 可走 GitHub Actions 发 Release（`agnx-bridge-chrome-mv3.zip`）。
 
