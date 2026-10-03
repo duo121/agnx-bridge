@@ -2,7 +2,7 @@
 
 [English](./README.en.md) · [MIT License](./LICENSE)
 
-![AGNX Bridge](./docs/assets/cover-hero.jpg)
+![AGNX Bridge](./docs/assets/cover.jpg)
 
 AGNX Bridge 让 Cursor / Claude / Codex **驱动你已经打开的 Chrome**：点页面、管标签、看书签，以及 Console / Network 等开发者工具。扩展在浏览器里执行，Skill 教 Agent 怎么调。复用真实登录态，不另起无痕浏览器。
 
@@ -189,8 +189,6 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 日志目录在运行时根下的 `.output/`（见上表「本机运行时目录」），常见文件：`native-host.log`、`bridge-server.stderr.log`。
 
 打 `v*` tag 可走 GitHub Actions 发 Release（`agnx-bridge-chrome-mv3.zip`）。
-
-封面源文件：`docs/assets/cover-hero.html`（排版导出，不是在旧 JPG 上叠字）。原品牌静帧仍保留为 `docs/assets/cover.jpg`。
 
 ---
 

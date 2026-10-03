@@ -2,7 +2,7 @@
 
 [中文](./README.md) · [MIT License](./LICENSE)
 
-![AGNX Bridge](./docs/assets/cover-hero.jpg)
+![AGNX Bridge](./docs/assets/cover.jpg)
 
 AGNX Bridge lets Cursor / Claude / Codex **drive the Chrome you already have open**: click pages, manage tabs, read bookmarks, and use Console / Network-style developer tools. The extension executes in the browser; the Skill teaches the agent how to call it. It reuses your real login state — no extra incognito browser.
 
@@ -189,8 +189,6 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 Logs live under `.output/` inside the runtime directory above (`native-host.log`, `bridge-server.stderr.log`).
 
 Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome-mv3.zip`).
-
-Cover source: `docs/assets/cover-hero.html` (typeset export, not text overlaid on the old JPG). The original brand still is kept as `docs/assets/cover.jpg`.
 
 ---
 
