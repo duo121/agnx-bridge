@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>AGNX Bridge cover</title>
+    <style>
+      :root {
+        --bg: #120e0b;
+        --ink: #f3ead8;
+        --muted: #c4b194;
+        --copper: #c4783a;
+        --copper-soft: rgba(196, 120, 58, 0.55);
+        --line: rgba(196, 120, 58, 0.22);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .stage {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        background:
+          radial-gradient(ellipse 70% 80% at 100% 0%, rgba(196, 120, 58, 0.28), transparent 55%),
+          radial-gradient(ellipse 50% 60% at 0% 100%, rgba(196, 120, 58, 0.08), transparent 50%),
+          var(--bg);
+      }
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 20%, transparent 75%);
+        opacity: 0.55;
+      }
+      .copy {
+        position: absolute;
+        left: 88px;
+        top: 118px;
+        width: 640px;
+      }
+      .eyebrow {
+        font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.34em;
+        color: var(--copper);
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin-top: 22px;
+        font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif;
+        font-weight: 400;
+        font-size: 86px;
+        line-height: 0.95;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+      }
+      .rule {
+        width: 72px;
+        height: 1px;
+        margin: 28px 0 22px;
+        background: var(--copper);
+        position: relative;
+      }
+      .rule::before,
+      .rule::after {
+        content: "";
+        position: absolute;
+        top: -3px;
+        width: 7px;
+        height: 7px;
+        border: 1px solid var(--copper);
+        transform: rotate(45deg);
+        background: var(--bg);
+      }
+      .rule::before {
+        left: 32px;
+      }
+      .rule::after {
+        display: none;
+      }
+      .zh {
+        font-family: "Songti SC", "STSong", "Iowan Old Style", serif;
+        font-size: 28px;
+        line-height: 1.35;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .en {
+        margin-top: 10px;
+        font-family: "Iowan Old Style", Palatino, serif;
+        font-size: 18px;
+        color: var(--muted);
+        font-style: italic;
+      }
+      .chips {
+        position: absolute;
+        left: 88px;
+        bottom: 72px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 720px;
+      }
+      .chip {
+        font-family: "Avenir Next", "PingFang SC", sans-serif;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        color: var(--ink);
+        border: 1px solid var(--copper-soft);
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(18, 14, 11, 0.35);
+      }
+      .art {
+        position: absolute;
+        right: 72px;
+        top: 148px;
+        width: 420px;
+        height: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="grid"></div>
+      <div class="copy">
+        <div class="eyebrow">Local Bridge Control</div>
+        <h1>AGNX Bridge</h1>
+        <div class="rule"></div>
+        <div class="zh">让 AI 操作你正在用的 Chrome</div>
+        <div class="en">Your logged-in Chrome, as an AI runtime.</div>
+      </div>
+      <div class="chips">
+        <span class="chip">网页自动化</span>
+        <span class="chip">标签页</span>
+        <span class="chip">书签</span>
+        <span class="chip">Console</span>
+        <span class="chip">Network</span>
+        <span class="chip">开发者工具</span>
+      </div>
+      <svg class="art" viewBox="0 0 420 420" fill="none" aria-hidden="true">
+        <rect x="48" y="78" width="300" height="188" rx="10" stroke="#c4783a" stroke-width="1.6" />
+        <circle cx="72" cy="100" r="4" stroke="#c4783a" stroke-width="1.2" />
+        <circle cx="88" cy="100" r="4" stroke="#c4783a" stroke-width="1.2" />
+        <circle cx="104" cy="100" r="4" stroke="#c4783a" stroke-width="1.2" />
+        <path
+          d="M70 268 C 110 268, 128 170, 176 168 C 230 166, 248 300, 318 302 C 348 303, 360 250, 372 232"
+          stroke="#c4783a"
+          stroke-width="1.5"
+        />
+        <path
+          d="M70 268 C 110 268, 128 170, 176 168 C 230 166, 248 300, 318 302 L 318 268 L 70 268 Z"
+          fill="#c4783a"
+          fill-opacity="0.08"
+        />
+        <g fill="none" stroke="#c4783a" stroke-width="1">
+          <line x1="100" y1="268" x2="100" y2="250" />
+          <line x1="124" y1="268" x2="124" y2="228" />
+          <line x1="148" y1="268" x2="148" y2="196" />
+          <line x1="172" y1="268" x2="172" y2="172" />
+          <line x1="196" y1="268" x2="196" y2="188" />
+          <line x1="220" y1="268" x2="220" y2="214" />
+          <line x1="244" y1="268" x2="244" y2="248" />
+          <line x1="268" y1="268" x2="268" y2="278" />
+          <line x1="292" y1="268" x2="292" y2="296" />
+        </g>
+        <line x1="176" y1="78" x2="176" y2="360" stroke="#c4783a" stroke-width="1" opacity="0.85" />
+        <polygon points="176,368 171,356 181,356" fill="#c4783a" />
+        <line x1="48" y1="340" x2="360" y2="340" stroke="#c4783a" stroke-width="1.2" />
+        <rect x="168" y="332" width="16" height="16" transform="rotate(45 176 340)" stroke="#c4783a" fill="#120e0b" />
+      </svg>
+    </div>
+  </body>
+</html>

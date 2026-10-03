@@ -2,24 +2,24 @@
 
 [English](./README.en.md) · [MIT License](./LICENSE)
 
-![AGNX Bridge](./docs/assets/cover.jpg)
+![AGNX Bridge](./docs/assets/cover-hero.jpg)
 
-把你**日常已登录的 Chrome** 变成 AI 的本地浏览器运行时。  
-**浏览器扩展 + Agent Skill** 一套交付：扩展执行，Skill 教 Claude / Codex / Cursor 怎么调。
+AGNX Bridge 让 Cursor / Claude / Codex **驱动你已经打开的 Chrome**：点页面、管标签、看书签，以及 Console / Network 等开发者工具。扩展在浏览器里执行，Skill 教 Agent 怎么调。复用真实登录态，不另起无痕浏览器。
 
-```text
-AI（Cursor / Codex / Claude Code）
-    │  curl POST /api/agnx-bridge/exec   （结果再 GET /exec/:id 轮询）
-    ▼
-本机 bridge server（默认 :3054，native-host 拉起）
-    │  扩展轮询拉取任务 / 回传结果
-    ▼
-Chrome 扩展（AGNX Bridge）── 跑在你「日常已登录」的真 Chrome，不另起浏览器
-    │
-    ├─ browser-agent  → 动态调 chrome.* / CDP（主轴：控浏览器本体）
-    ├─ page-agent     → 在网页 Main World 跑一段 JS（控当前页 DOM / 站内逻辑）
-    └─ console-capture → 会话式抓页面/扩展 console
-```
+| 你能让 AI 做的 | 实际覆盖 |
+|---|---|
+| 网页自动化 | 打开 / 跳转、点击输入滚动、页内 JS、截图 |
+| 标签页管理 | 标签、窗口、分组、会话 |
+| 书签与浏览器资料 | 书签、历史、下载、cookies 等 |
+| 开发者工具 | CDP 附加、Runtime、页面调试 |
+| Console | 页面 console + 扩展 Service Worker 日志 |
+| Network | 打开 Network 域、资源与网络排查 |
+
+对 Agent 可以直接说：
+
+- 「用 AGNX Bridge 列出当前标签」
+- 「打开百度并截一张图」
+- 「抓这个标签页的 Console / Network」
 
 HTTP API：**`/api/agnx-bridge/*`** · 默认端口：**`3054`** · extensionId：`eppdcemdgahndmmnnfhmgpcagpjiclcp`
 
@@ -27,8 +27,7 @@ HTTP API：**`/api/agnx-bridge/*`** · 默认端口：**`3054`** · extensionId�
 
 ## 目标用户路径（推荐）
 
-1. 从 GitHub **[Releases](https://github.com/duo121/agnx-bridge/releases)** 下载 `agnx-bridge-chrome-mv3.zip`，解压得到 `chrome-mv3/`  
-   （若还没有 Release，用下方「从源码安装」先 `pnpm build`。）
+1. 从 GitHub **[Releases](https://github.com/duo121/agnx-bridge/releases)** 下载 `agnx-bridge-chrome-mv3.zip`，解压得到 `chrome-mv3/`
 2. Chrome → `chrome://extensions` → 开发者模式 → **加载已解压的扩展程序** → 选 `chrome-mv3/`
 3. 安装本机宿主 + Skill：
 
@@ -57,6 +56,24 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 ```
 
 应看到 `clients.online >= 1`。
+
+---
+
+## 它怎么接上（给要接线的人）
+
+```text
+AI（Cursor / Codex / Claude Code）
+    │  curl POST /api/agnx-bridge/exec   （结果再 GET /exec/:id 轮询）
+    ▼
+本机 bridge server（默认 :3054，native-host 拉起）
+    │  扩展轮询拉取任务 / 回传结果
+    ▼
+Chrome 扩展（AGNX Bridge）── 跑在你「日常已登录」的真 Chrome
+    │
+    ├─ browser-agent  → 动态调 chrome.* / CDP（控浏览器本体）
+    ├─ page-agent     → 在网页 Main World 跑一段 JS（控当前页 DOM / 站内逻辑）
+    └─ console-capture → 会话式抓页面/扩展 console
+```
 
 ---
 
@@ -114,14 +131,13 @@ Agent 入口：
 
 ---
 
-## 能力边界
+## 刻意没有
 
-| 有 | 没有 |
+| 没有 | 说明 |
 |---|---|
-| 动态 `chrome.*` / CDP（`browser-agent`） | 一等公民「可交互元素列表 / AX observe / ref」 |
-| 页内任意 JS（`page-agent`） | Chrome 网上应用店一键安装（目前 Load unpacked） |
-| 会话式 console 采集 | 无 Node 的纯 zip 安装 |
-| 复用真实登录态与日常标签 | — |
+| 一等公民「可交互元素列表 / AX observe / ref」 | 需要时用 `page-agent` 自写 DOM 查询，或 CDP |
+| Chrome 网上应用店一键安装 | 目前 Load unpacked |
+| 无 Node 的纯 zip 安装 | native-host 需要本机 Node |
 
 ---
 
@@ -173,6 +189,8 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 日志目录在运行时根下的 `.output/`（见上表「本机运行时目录」），常见文件：`native-host.log`、`bridge-server.stderr.log`。
 
 打 `v*` tag 可走 GitHub Actions 发 Release（`agnx-bridge-chrome-mv3.zip`）。
+
+封面源文件：`docs/assets/cover-hero.html`（排版导出，不是在旧 JPG 上叠字）。原品牌静帧仍保留为 `docs/assets/cover.jpg`。
 
 ---
 

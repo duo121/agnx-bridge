@@ -2,24 +2,24 @@
 
 [中文](./README.md) · [MIT License](./LICENSE)
 
-![AGNX Bridge](./docs/assets/cover.jpg)
+![AGNX Bridge](./docs/assets/cover-hero.jpg)
 
-Turn your **everyday, already-signed-in Chrome** into a local browser runtime for AI agents.  
-One package: a **Chrome extension** that executes work, plus an **Agent Skill** that teaches Claude / Codex / Cursor how to call it.
+AGNX Bridge lets Cursor / Claude / Codex **drive the Chrome you already have open**: click pages, manage tabs, read bookmarks, and use Console / Network-style developer tools. The extension executes in the browser; the Skill teaches the agent how to call it. It reuses your real login state — no extra incognito browser.
 
-```text
-AI (Cursor / Codex / Claude Code)
-    │  curl POST /api/agnx-bridge/exec   (then poll GET /exec/:id)
-    ▼
-Local bridge server (default :3054, started by native-host)
-    │  extension polls for jobs / posts results
-    ▼
-Chrome extension (AGNX Bridge) — runs in your real daily Chrome
-    │
-    ├─ browser-agent   → dynamic chrome.* / CDP (control the browser)
-    ├─ page-agent      → run JS in the page main world (DOM / site logic)
-    └─ console-capture → session-style page / extension console capture
-```
+| What you can ask the AI to do | What that covers |
+|---|---|
+| Page automation | Open / navigate, click-type-scroll, in-page JS, screenshots |
+| Tab management | Tabs, windows, groups, sessions |
+| Browser data | Bookmarks, history, downloads, cookies, and similar APIs |
+| Developer tools | CDP attach, Runtime, page debugging |
+| Console | Page console + extension service-worker logs |
+| Network | Enable the Network domain; inspect resources and traffic |
+
+You can say to the agent:
+
+- “Use AGNX Bridge to list my tabs”
+- “Open Baidu and take a screenshot”
+- “Capture Console / Network on this tab”
 
 HTTP API: **`/api/agnx-bridge/*`** · Default port: **`3054`** · extensionId: `eppdcemdgahndmmnnfhmgpcagpjiclcp`
 
@@ -27,8 +27,7 @@ HTTP API: **`/api/agnx-bridge/*`** · Default port: **`3054`** · extensionId: `
 
 ## Recommended path
 
-1. Download `agnx-bridge-chrome-mv3.zip` from **[Releases](https://github.com/duo121/agnx-bridge/releases)** and unzip to get `chrome-mv3/`  
-   (If there is no release yet, use “From source” below and `pnpm build`.)
+1. Download `agnx-bridge-chrome-mv3.zip` from **[Releases](https://github.com/duo121/agnx-bridge/releases)** and unzip to get `chrome-mv3/`
 2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → select `chrome-mv3/`
 3. Install the local native host + Skill:
 
@@ -57,6 +56,24 @@ curl -sS http://localhost:3054/api/agnx-bridge/health
 ```
 
 Expect `clients.online >= 1`.
+
+---
+
+## How it is wired (for integrators)
+
+```text
+AI (Cursor / Codex / Claude Code)
+    │  curl POST /api/agnx-bridge/exec   (then poll GET /exec/:id)
+    ▼
+Local bridge server (default :3054, started by native-host)
+    │  extension polls for jobs / posts results
+    ▼
+Chrome extension (AGNX Bridge) — runs in your real daily Chrome
+    │
+    ├─ browser-agent   → dynamic chrome.* / CDP (control the browser)
+    ├─ page-agent      → run JS in the page main world (DOM / site logic)
+    └─ console-capture → session-style page / extension console capture
+```
 
 ---
 
@@ -114,14 +131,13 @@ Task templates: [`skills/agnx-bridge/references/task-templates.md`](./skills/agn
 
 ---
 
-## Capability boundary
+## Intentionally not included
 
-| Included | Not (yet) |
+| Missing | Notes |
 |---|---|
-| Dynamic `chrome.*` / CDP (`browser-agent`) | First-class interactive element / AX observe / ref lists |
-| Arbitrary in-page JS (`page-agent`) | One-click Chrome Web Store install (Load unpacked today) |
-| Session console capture | Node-free zip-only install |
-| Real login state + everyday tabs | — |
+| First-class interactive element / AX observe / ref lists | Use `page-agent` DOM queries or CDP when needed |
+| One-click Chrome Web Store install | Load unpacked today |
+| Node-free zip-only install | Native-host needs local Node |
 
 ---
 
@@ -173,6 +189,8 @@ NATIVE_HOST_BROWSER=chromium pnpm native-host:install
 Logs live under `.output/` inside the runtime directory above (`native-host.log`, `bridge-server.stderr.log`).
 
 Push a `v*` tag to publish a Release zip via GitHub Actions (`agnx-bridge-chrome-mv3.zip`).
+
+Cover source: `docs/assets/cover-hero.html` (typeset export, not text overlaid on the old JPG). The original brand still is kept as `docs/assets/cover.jpg`.
 
 ---
 
